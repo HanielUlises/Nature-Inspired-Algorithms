@@ -24,5 +24,10 @@ double precision (int low, int high, int numberOfBits){
 }
 
 std::set<int> randomDistinctNumbers (int upperLimit, int amountNumbers){
-    
+    std::set<int> numbers;
+    while (numbers.size() < amountNumbers){
+        numbers.insert(rand() % upperLimit);
+    }
+
+    return numbers;
 }
