@@ -22,11 +22,11 @@ std::string Solution::toString() {
         stream << bit << " ";
     }
     stream.seekp(-1, std::ios_base::end);
-    stream << "]";
+    stream << "]" << bitsToDouble() << " fitness = " << fitness ();
     return stream.str();
 }
 
-double Solution::bitsToDouble() {
+double Solution::bitsToDouble () {
     double prec = precision(mLow, mHigh, mNumberOfBits);
     double sum = 0.0;
     for (int i = 0; i < mNumberOfBits; i++) {
@@ -35,4 +35,10 @@ double Solution::bitsToDouble() {
         }
     }
     return mLow + sum * prec;
+}
+
+// f(x) = x + 2 * sin(x)
+double Solution::fitness () {
+    double x = bitsToDouble ();
+    return x + 2 * sin(x);
 }
