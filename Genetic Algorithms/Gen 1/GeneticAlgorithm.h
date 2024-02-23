@@ -8,7 +8,7 @@
 #include <iostream>
 
 class GeneticAlgorithm{
-    public:    
+    public:
     GeneticAlgorithm(int populationSize);
     Solution perform (int numberOfBits, int low, int high);
 
