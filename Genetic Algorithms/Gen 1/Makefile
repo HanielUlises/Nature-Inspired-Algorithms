@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic
 LDFLAGS =
 OBJ = GeneticAlgorithm.o main.o Solution.o Utils.o
 DEPS = GeneticAlgorithm.h Solution.h Utils.h
-TARGET = GeneticAlgorithms
+TARGET = genAlgo
 
 all: $(TARGET)
 

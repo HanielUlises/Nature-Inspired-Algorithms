@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <set>
+#include <cmath>
 
 double randomDouble (){
     return double(rand() % 1000)/1000;
@@ -19,7 +20,7 @@ bool randomProbability (double probability){
 }
 
 double precision (int low, int high, int numberOfBits){
-    double prec = (double)(high - low)/(double)(pow(2,numberOfBits)-1);
+    double prec = (double)(high - low)/(double)(std::pow(2,numberOfBits)-1);
     return prec;
 }
 
