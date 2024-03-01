@@ -31,6 +31,7 @@ void expected_val (double z, double mean_z, std::vector<double>& exp_z){
     exp_z.push_back(result);
 }
 
+// Roulette selection without replacement
 template<typename T>
 T& rouletteSelection(std::vector<T>& population, const std::vector<double>& fitness) {
     static std::mt19937 rng(std::random_device{}());
@@ -54,4 +55,28 @@ T& rouletteSelection(std::vector<T>& population, const std::vector<double>& fitn
     // In case the roulette does not select properly, return a default (first) element
     // This should not happen, but it's good practice tho
     return population.front();
+}
+
+// Roulette selection with replacement :D
+template<typename T>
+std::vector<size_t> rouletteSelectionWithReplacement(std::vector<T>& population, const std::vector<double>& fitness, size_t numSelections) {
+    std::vector<size_t> selectedIndices;
+    static std::mt19937 rng(std::random_device{}());
+    double totalFitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
+
+    std::uniform_real_distribution<double> dist(0.0, totalFitness);
+
+    for (size_t n = 0; n < numSelections; ++n) {
+        double randomSelection = dist(rng);
+        double accumulated = 0.0;
+        for (size_t i = 0; i < population.size(); ++i) {
+            accumulated += fitness[i];
+            if (accumulated >= randomSelection) {
+                selectedIndices.push_back(i);
+                break;
+            }
+        }
+    }
+
+    return selectedIndices;
 }
