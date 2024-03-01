@@ -1,5 +1,8 @@
 #include "function_test_1.h"
 
+#include <iomanip> 
+#include <string>
+
 int main (){
     // Parte uno
     std::vector<std::pair<double, double>> points_p1 = {
@@ -19,7 +22,7 @@ int main (){
     for (double val : z) {
         expected_val(val, mean_z, expected_z);
     }
-
+    
     // Display expected values
     std::cout << std::endl << "Expected values" << std::endl;
     for (double i : expected_z) {
