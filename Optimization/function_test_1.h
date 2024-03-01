@@ -14,6 +14,7 @@ void f2(double x1, double x2, std::vector<double>& z){
     z.push_back(goal);
 }
 
+// Mean of goal set z
 double mean (std::vector<double> z){
     if (z.empty()) return 0;
     double sum = 0;
