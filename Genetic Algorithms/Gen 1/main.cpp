@@ -2,10 +2,11 @@
 #include "GeneticAlgorithm.h"
 
 int main (){
-    int population = 100;
+    int population = 100, generations = 10;
     int bits = 8;
     int low = 0, high = 4;
-    GeneticAlgorithm test(population);
+    int t_gp_size = 3;
+    GeneticAlgorithm test(population, generations, t_gp_size);
     Solution test_sol = test.perform(bits, low, high);
 
     return 1;
