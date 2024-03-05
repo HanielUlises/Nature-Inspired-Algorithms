@@ -24,6 +24,8 @@ Solution GeneticAlgorithm::perform (int numberOfBits, int low, int high){
         std::cout << s.toString() << std::endl;
     }
 
+    std::cout << "Crossed solutions" << std::endl;
+
     for(int i = 0; i < generations; i++){
         std::vector<Solution> crossedSolutions = tournamentCrossover (currentGen);
     }
@@ -61,6 +63,11 @@ std::vector<Solution> GeneticAlgorithm::tournamentCrossover (std::vector<Solutio
         Solution winner_2 = tournamentWinners(currentGeneration);
 
         // Crossover selection
-         // Children
+        // Children
+        std::vector<Solution> chosen = winner_1.single_point_crossover(winner_2, crossoverProbability);
+        newSolutions.push_back(chosen[0]);
+        newSolutions.push_back(chosen[1]);
     }
+
+    return newSolutions;
 }

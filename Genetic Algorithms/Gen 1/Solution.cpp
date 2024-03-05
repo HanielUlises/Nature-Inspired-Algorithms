@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <cmath>
+#include <iostream>
 
 Solution::Solution(int numberOfBits, int low, int high) :
     numberOfBits{numberOfBits},
@@ -52,6 +53,7 @@ double Solution::fitness () {
 
 std::vector<Solution> Solution::single_point_crossover (Solution other, double crossoverProbability){
     bool cross = randomProbability(crossoverProbability);
+
 
     if(cross){
         int crossPoint = rand() % numberOfBits;
