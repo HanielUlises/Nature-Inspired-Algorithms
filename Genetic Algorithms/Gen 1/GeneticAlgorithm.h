@@ -11,15 +11,17 @@
 
 class GeneticAlgorithm{
     public:
-    GeneticAlgorithm(int populationSize, int generation, int tournamentGroupSize);
+    GeneticAlgorithm(int populationSize, int generation, int tournamentGroupSize, double crossoverProbability);
     Solution perform (int numberOfBits, int low, int high);
-    std::vector<Solution> tournamentWinners (std::vector<Solution>const & currentGeneration);
-    std::vector<Solution> tournamentCrossover (std::vector<Solution>const & currentGeneration);
 
     private:
+    Solution tournamentWinners (std::vector<Solution>const & currentGeneration);
+    std::vector<Solution> tournamentCrossover (std::vector<Solution>const & currentGeneration);
+
     int populationSize;
     int generations;
     int tournamentGroupSize;
+    double crossoverProbability;
 };
 
 #endif // GENETIC_ALGORITHM

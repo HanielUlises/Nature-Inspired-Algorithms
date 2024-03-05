@@ -1,10 +1,11 @@
 #include "GeneticAlgorithm.h"
 #include "Utils.h"
 
-GeneticAlgorithm::GeneticAlgorithm (int populationSize, int generations ,int tournamentGroupSize){
+GeneticAlgorithm::GeneticAlgorithm (int populationSize, int generations ,int tournamentGroupSize, double crossoverProbability){
     this -> populationSize = populationSize;
     this -> generations = generations;
     this -> tournamentGroupSize = tournamentGroupSize;
+    this -> crossoverProbability = crossoverProbability;
 }
 
 Solution GeneticAlgorithm::perform (int numberOfBits, int low, int high){
@@ -30,7 +31,7 @@ Solution GeneticAlgorithm::perform (int numberOfBits, int low, int high){
     return best;
 }
 
-std::vector<Solution> GeneticAlgorithm::tournamentWinners (std::vector<Solution> const& currentGeneration){
+Solution GeneticAlgorithm::tournamentWinners (std::vector<Solution> const& currentGeneration){
     std::vector<Solution> candidates;
 
     std::set<int> randomNumbers = randomDistinctNumbers (populationSize, tournamentGroupSize);
@@ -49,14 +50,17 @@ std::vector<Solution> GeneticAlgorithm::tournamentWinners (std::vector<Solution>
                 best_candidate = s;
             }
         }
-    return candidates;
+    return best_candidate;
 }
 
 std::vector<Solution> GeneticAlgorithm::tournamentCrossover (std::vector<Solution> const& currentGeneration){
     std::vector<Solution> newSolutions;
 
-    while (newSolutions.size() < populationSize){       
+    while (newSolutions.size() < populationSize){
         Solution winner_1 = tournamentWinners(currentGeneration);
         Solution winner_2 = tournamentWinners(currentGeneration);
+
+        // Crossover selection
+         // Children
     }
 }
