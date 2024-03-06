@@ -37,7 +37,7 @@ void conversion (double lowerLimit, double range){
     int iter = (int) range;
     std::string bin_string;
 
-    for(int i = 0; i < iter; i++){
+    for(int i = 0; i <= iter; i++){
         decToBin (i, bin_string);
         std::cout << lowerLimit << " : ";
         std::cout << bin_string << std::endl;
