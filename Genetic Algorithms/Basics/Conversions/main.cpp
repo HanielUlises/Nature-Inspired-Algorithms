@@ -23,6 +23,8 @@ int bitsNeeded(double x, double y, double& range) {
     // Determine the maximum number of decimal places between the two numbers
     int maxDecimals = std::max(countDecimalPlaces(x), countDecimalPlaces(y));
     
+    // Formulae implemented
+    // log2(upLim * 10^dec - lowLim * 10^dec)
     double scaledX = x * std::pow(10, maxDecimals);
     double scaledY = y * std::pow(10, maxDecimals);
     
