@@ -3,7 +3,6 @@
 #include <cmath>
 #include <random>
 
-// Random number generator initialization
 std::random_device rd;
 std::mt19937 gen(rd());
 

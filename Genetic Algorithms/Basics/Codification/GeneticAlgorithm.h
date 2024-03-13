@@ -2,6 +2,7 @@
 #include <vector>
 #include <functional>
 
+// Gen algo class
 class GeneticAlgorithm {
 public:
     GeneticAlgorithm(int populationSize, int numberOfGenerations, double crossoverRate, double mutationRate);
