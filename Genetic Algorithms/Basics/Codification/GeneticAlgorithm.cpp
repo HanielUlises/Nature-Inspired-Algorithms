@@ -42,13 +42,14 @@ std::vector<int> GeneticAlgorithm::selection() {
 }
 
 void GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
+
 }
 
 void GeneticAlgorithm::mutation() {
 }
 
 bool GeneticAlgorithm::shouldStop(int currentGeneration) {
-    return false; // Placeholder
+    return false;
 }
 
 double GeneticAlgorithm::rosenbrockFunction(const std::vector<double>& individual) {
