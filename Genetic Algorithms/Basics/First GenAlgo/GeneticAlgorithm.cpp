@@ -28,7 +28,23 @@ void GeneticAlgorithm::run() {
 }
 
 void GeneticAlgorithm::initializePopulation() {
+    population.clear();
+
+    // CHECK
+    std::uniform_real_distribution<double> dis(-10.0, 10.0);
+
+    int numGenes = 100;
+
+    for (int i = 0; i < populationSize; ++i) {
+        std::vector<double> individual;
+        for (int j = 0; j < numGenes; ++j) {
+            double gene = dis(gen);
+            individual.push_back(gene);
+        }
+        population.push_back(individual);
+    }
 }
+
 
 void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<double>&)> objectiveFunction) {
     for (auto& individual : population) {
@@ -38,17 +54,85 @@ void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<do
 }
 
 std::vector<int> GeneticAlgorithm::selection() {
-    return std::vector<int>(); // Placeholder
+    std::vector<int> selectedParents;
+
+    double totalFitness = 0.0;
+    for (double fitness : fitnessValues) {
+        totalFitness += fitness;
+    }
+
+    // Normalizar los valores de ajuste (fitness) para obtener probabilidades de selección
+    std::vector<double> probabilities;
+    for (double fitness : fitnessValues) {
+        probabilities.push_back(fitness / totalFitness);
+    }
+
+    // Fathers selection without replacement
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+    while (selectedParents.size() < populationSize) {
+        // Random number [0, 1)
+        double r = dis(gen);
+        double cumulativeProbability = 0.0;
+        for (int i = 0; i < populationSize; ++i) {
+            cumulativeProbability += probabilities[i];
+            if (cumulativeProbability > r) {
+                selectedParents.push_back(i);
+                break;
+            }
+        }
+    }
+
+    return selectedParents;
 }
 
-void GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
 
+// Single point crossover
+void GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
+    for (int i = 0; i < selectedParents.size(); i += 2) {
+        if (dis(gen) < crossoverRate) {
+            // Randomly select crossover point
+            int crossoverPoint = std::uniform_int_distribution<>(1, population[0].size() - 1)(gen);
+
+            for (int j = crossoverPoint; j < population[0].size(); ++j) {
+                std::swap(population[selectedParents[i]][j], population[selectedParents[i + 1]][j]);
+            }
+        }
+    }
 }
 
 void GeneticAlgorithm::mutation() {
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    for (auto& individual : population) {
+        for (double& gene : individual) {
+            // Mutation at a given rate
+            if (dis(gen) < mutationRate) {
+                // Random change within the gene
+                // Mean 0
+                // Standard deviation 0.1
+                double mutationChange = std::normal_distribution<double>(0.0, 0.1)(gen);
+            }
+        }
+    }
 }
 
 bool GeneticAlgorithm::shouldStop(int currentGeneration) {
+    double bestFitness = *std::min_element(fitnessValues.begin(), fitnessValues.end());
+    double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
+    double optimalGlobalFitness = 0.0 // Hay que ajustar esto;
+
+    // |f(⃗xbest)−f(⃗x∗)| ≤ ε
+    if (std::abs(bestFitness - optimalGlobalFitness) <= 0.001) {
+        return true;
+    }
+
+    // f(⃗xworst)−f(⃗xbest)| ≤ ε
+    if (std::abs(worstFitness - bestFitness) <= 0.001) {
+        return true;
+    }
+
     return false;
 }
 
