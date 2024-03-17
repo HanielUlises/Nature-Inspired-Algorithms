@@ -121,7 +121,7 @@ void GeneticAlgorithm::mutation() {
 bool GeneticAlgorithm::shouldStop(int currentGeneration) {
     double bestFitness = *std::min_element(fitnessValues.begin(), fitnessValues.end());
     double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
-    double optimalGlobalFitness = 0.0 // Hay que ajustar esto;
+    double optimalGlobalFitness = 0.0; // Hay que ajustar esto;
 
     // |f(⃗xbest)−f(⃗x∗)| ≤ ε
     if (std::abs(bestFitness - optimalGlobalFitness) <= 0.001) {
