@@ -2,8 +2,10 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
 
-#include "decToBin.h"
+#include "encode.h"
+#include "decode.h"
 
 int countDecimalPlaces(double number) {
     // Like stod in C but inverted jiji
@@ -35,6 +37,8 @@ int bitsNeeded(double x, double y, double& range) {
 
 void conversion (double lowerLimit, double range){
     int iter = (int) range;
+    int aux = 0;
+    std::vector<int> result_it;
     std::string bin_string;
 
     for(int i = 0; i <= iter; i++){
@@ -43,7 +47,12 @@ void conversion (double lowerLimit, double range){
         std::cout << bin_string << std::endl;
         std::cout << std::endl;
         lowerLimit += 0.01;
+
+        aux = binToDec(bin_string);
+        result_it.push_back(aux);
+        aux = 0;
     }
+
 }
 
 
