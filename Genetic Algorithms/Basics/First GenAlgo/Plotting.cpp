@@ -1,4 +1,4 @@
-// Plotting.cpp
+// Had to make a plotting file in order to solve reference problems of matplotlibcpp
 #include "matplotlibcpp.h"
 #include "GeneticAlgorithm.h"
 
@@ -17,6 +17,5 @@ void GeneticAlgorithm::plotConvergenceGraph() {
     plt::legend();
     plt::title("Convergence Graph");
 
-    // Show the plot
     plt::show();
 }

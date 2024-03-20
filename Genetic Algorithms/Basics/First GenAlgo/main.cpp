@@ -58,6 +58,8 @@ void conversion (double lowerLimit, double range){
 
 
 int main() {
+    /*
+    
     double x, y;
     std::cout << "Enter the first number (x): ";
     std::cin >> x;
@@ -69,7 +71,8 @@ int main() {
     int totalBitsNeeded = bitsNeeded(x, y, range);
     conversion (x,range);
     std::cout << "Total number of bits needed: " << totalBitsNeeded << std::endl;
-    
+    */
+   
     int population = 100;
     int num_gen = 100;
     double cross_rate = 0.9f;
