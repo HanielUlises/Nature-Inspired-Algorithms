@@ -63,8 +63,6 @@ void GeneticAlgorithm::elitismParents() {
     {
        population.erase(population.begin());
     }
-    
-    
 
 }
 
