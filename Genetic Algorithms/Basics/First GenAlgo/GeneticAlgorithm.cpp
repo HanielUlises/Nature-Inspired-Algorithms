@@ -4,7 +4,7 @@
 #include <random>
 #include <iostream>
 
-#define M_PI 3.14159265358979323846 /* pi */
+#define M_PI 3.14159265358979323846
 #define M_E 2.71828182845904523536
 
 std::random_device rd;
@@ -64,6 +64,9 @@ void GeneticAlgorithm::elitismParents() {
        population.erase(population.begin());
     }
 
+    population.resize(populationSize);
+    fitnessValues.resize(populationSize);
+
 }
 
 void GeneticAlgorithm::initializePopulation() {
@@ -93,77 +96,63 @@ void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<do
 
 std::vector<int> GeneticAlgorithm::selection() {
     std::vector<int> selectedParents;
+    double totalFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0);
 
-    double totalFitness = 0.0;
-    for (double fitness : fitnessValues) {
-        totalFitness += fitness;
-    }
-
-    // Normalizar los valores de ajuste (fitness) para obtener probabilidades de selección
     std::vector<double> probabilities;
     for (double fitness : fitnessValues) {
         probabilities.push_back(fitness / totalFitness);
     }
 
-    // Fathers selection without replacement
     std::uniform_real_distribution<double> dis(0.0, 1.0);
-    while (selectedParents.size() < populationSize) {
-        // Random number [0, 1)
+    for (int i = 0; i < populationSize; ++i) {
         double r = dis(gen);
         double cumulativeProbability = 0.0;
-        for (int i = 0; i < populationSize; ++i) {
-            cumulativeProbability += probabilities[i];
+        for (int j = 0; j < probabilities.size(); ++j) {
+            cumulativeProbability += probabilities[j];
             if (cumulativeProbability > r) {
-                selectedParents.push_back(i);
+                selectedParents.push_back(j);
                 break;
             }
         }
     }
-
     return selectedParents;
 }
 
 
-// Single point crossover
+
+// Two point crossover
 std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-    std::vector<std::vector<double>> child;
-    std::vector<double> dad, mom, child1, child2;
+    std::vector<std::vector<double>> children;
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+    std::uniform_int_distribution<> pointDist(1, population[0].size() - 2); // Ensure valid points
 
-    for (int i = 0; i < selectedParents.size(); i += 2) {
+    for (size_t i = 0; i < selectedParents.size() - 1; i += 2) {
         if (dis(gen) < crossoverRate) {
-            // Randomly select crossover point
-            //int crossoverPoint = std::uniform_int_distribution<>(1, population[0].size() - 1)(gen);
+            std::vector<double>& parent1 = population[selectedParents[i]];
+            std::vector<double>& parent2 = population[selectedParents[i + 1]];
 
-            //for (int j = crossoverPoint; j < population[0].size(); ++j) {
-            //    std::swap(population[selectedParents[i]][j], population[selectedParents[i + 1]][j]);
-            //}
+            // Generate two points for crossover
+            int point1 = pointDist(gen);
+            int point2 = pointDist(gen);
+            // Ensure point1 < point2
+            if (point1 > point2) std::swap(point1, point2);
 
+            std::vector<double> child1 = parent1;
+            std::vector<double> child2 = parent2;
 
-            //cruza de 2 puntos
-            for (int j = 0; j < population[0].size(); ++j) {
-                dad.push_back(population[selectedParents[i]][j]);
-                mom.push_back(population[selectedParents[i + 1]][j]);
+            // Perform the crossover
+            for (int j = point1; j <= point2; ++j) {
+                child1[j] = parent2[j];
+                child2[j] = parent1[j];
             }
-            for (int a = 0; a < 2; a++){
-                dad.push_back(dad[a]);
-                child2.push_back(mom[a]);
-            }
-            for (int b = 2; b < 6; b++){
-                child1.push_back(mom[b]);
-                child2.push_back(dad[b]);
-            }
-            for (int c = 6; c < 10; c++){
-                child1.push_back(dad[c]);
-                child2.push_back(mom[c]);
-            }
-            child.push_back(child1);
-            child.push_back(child2);
+
+            children.push_back(child1);
+            children.push_back(child2);
         }
     }
-    return child;
-
+    return children;
 }
+
 
 std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vector<double>> child) {
     std::uniform_real_distribution<double> dis(0.0, 1.0);
@@ -176,6 +165,7 @@ std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vec
                 // Mean 0
                 // Standard deviation 0.1
                 double mutationChange = std::normal_distribution<double>(0.0, 0.1)(gen);
+                gene += mutationChange;
             }
         }
     }
