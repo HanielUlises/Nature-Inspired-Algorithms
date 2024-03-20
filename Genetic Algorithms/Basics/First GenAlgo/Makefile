@@ -4,7 +4,7 @@ LDFLAGS = -lpython3.10
 
 TARGET = main
 
-SRC = main.cpp
+SRC = main.cpp GeneticAlgorithm.cpp Plotting.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

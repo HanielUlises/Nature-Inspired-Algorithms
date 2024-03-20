@@ -4,9 +4,6 @@
 #include <random>
 #include <iostream>
 
-#define M_PI 3.14159265358979323846
-#define M_E 2.71828182845904523536
-
 std::random_device rd;
 std::mt19937 gen(rd());
 
@@ -38,9 +35,18 @@ void GeneticAlgorithm::run() {
         evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
         elitismParents();
 
+        double bestFitness = *std::min_element(fitnessValues.begin(), fitnessValues.end());
+        double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
+        double averageFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0) / fitnessValues.size();
+
+        bestFitnessHistory.push_back(bestFitness);
+        worstFitnessHistory.push_back(worstFitness);
+        averageFitnessHistory.push_back(averageFitness);
+
         if (shouldStop(i)) break;
         std::cout<<i<<std::endl;
     }
+    plotConvergenceGraph();
 }
 
 void GeneticAlgorithm::elitismParents() {
@@ -66,7 +72,6 @@ void GeneticAlgorithm::elitismParents() {
 
     population.resize(populationSize);
     fitnessValues.resize(populationSize);
-
 }
 
 void GeneticAlgorithm::initializePopulation() {
