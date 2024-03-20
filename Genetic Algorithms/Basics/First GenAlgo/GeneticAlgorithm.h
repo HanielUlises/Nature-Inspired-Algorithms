@@ -20,11 +20,11 @@ private:
     double mutationRate;
     std::vector<std::vector<double>> population;
     std::vector<double> fitnessValues;
-
+    void elitismParents();
     void initializePopulation();
     void evaluateFitness(std::function<double(const std::vector<double>&)> objectiveFunction);
     std::vector<int> selection();
-    void crossover(std::vector<int>& selectedParents);
-    void mutation();
+    std::vector<std::vector<double>> crossover(std::vector<int>& selectedParents);
+    std::vector<std::vector<double>> mutation(std::vector<std::vector<double>> hijos);
     bool shouldStop(int currentGeneration);
 };

@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <iostream>
+
+#define M_PI 3.14159265358979323846 /* pi */
+#define M_E 2.71828182845904523536
 
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -15,25 +19,61 @@ GeneticAlgorithm::~GeneticAlgorithm() {
 }
 
 void GeneticAlgorithm::run() {
+    std::vector<std::vector<double>> hijos;
     initializePopulation();
-        for (int gen = 0; gen < numberOfGenerations; ++gen) {
+
+    for (int i = 0; i < numberOfGenerations; ++i) {
+        
         // Functions test
-        evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
+        evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));    
         // evaluateFitness(std::bind(&GeneticAlgorithm::ackleyFunction, this, std::placeholders::_1));
         auto selectedParents = selection();
-        crossover(selectedParents);
-        mutation();
-        if (shouldStop(gen)) break;
+        //se muere
+        hijos=crossover(selectedParents);
+        hijos=mutation(hijos); //hijos mutados
+        
+        for (size_t i = 0; i < hijos.size(); i++){
+            population.push_back(hijos[i]);
+        }
+        evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
+        elitismParents();
+
+        if (shouldStop(i)) break;
+        std::cout<<i<<std::endl;
     }
+}
+
+void GeneticAlgorithm::elitismParents() {
+
+    std::vector<double> temp;
+    double temp2; 
+    for(int i=0;i<population.size();i++){
+        for(int q=i+1;q<population.size();q++){
+            if(fitnessValues[i]<fitnessValues[q]){
+                temp=population[q]; 
+                population[q]=population[i]; 
+                population[i]=temp;
+                temp2=fitnessValues[q];
+                fitnessValues[q]=fitnessValues[i];
+                fitnessValues[i]=temp2;
+            } 
+        }
+    }
+    while (population.size()>100)
+    {
+       population.erase(population.begin());
+    }
+    
+    
+
 }
 
 void GeneticAlgorithm::initializePopulation() {
     population.clear();
 
     // CHECK
-    std::uniform_real_distribution<double> dis(-10.0, 10.0);
-
-    int numGenes = 100;
+    std::uniform_real_distribution<double> dis(-2.048, 2.048);
+    int numGenes = 10;
 
     for (int i = 0; i < populationSize; ++i) {
         std::vector<double> individual;
@@ -45,8 +85,8 @@ void GeneticAlgorithm::initializePopulation() {
     }
 }
 
-
 void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<double>&)> objectiveFunction) {
+    fitnessValues.clear();
     for (auto& individual : population) {
         double fitness = objectiveFunction(individual);
         fitnessValues.push_back(fitness);
@@ -87,25 +127,50 @@ std::vector<int> GeneticAlgorithm::selection() {
 
 
 // Single point crossover
-void GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
+std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
     std::uniform_real_distribution<> dis(0.0, 1.0);
+    std::vector<std::vector<double>> hijos;
+    std::vector<double> padre1, padre2, hijo1, hijo2;
 
     for (int i = 0; i < selectedParents.size(); i += 2) {
         if (dis(gen) < crossoverRate) {
             // Randomly select crossover point
-            int crossoverPoint = std::uniform_int_distribution<>(1, population[0].size() - 1)(gen);
+            //int crossoverPoint = std::uniform_int_distribution<>(1, population[0].size() - 1)(gen);
 
-            for (int j = crossoverPoint; j < population[0].size(); ++j) {
-                std::swap(population[selectedParents[i]][j], population[selectedParents[i + 1]][j]);
+            //for (int j = crossoverPoint; j < population[0].size(); ++j) {
+            //    std::swap(population[selectedParents[i]][j], population[selectedParents[i + 1]][j]);
+            //}
+
+
+            //cruza de 2 puntos
+            for (int j = 0; j < population[0].size(); ++j) {
+                padre1.push_back(population[selectedParents[i]][j]);
+                padre2.push_back(population[selectedParents[i + 1]][j]);
             }
+            for (int a = 0; a < 2; a++){
+                hijo1.push_back(padre1[a]);
+                hijo2.push_back(padre2[a]);
+            }
+            for (int b = 2; b < 6; b++){
+                hijo1.push_back(padre2[b]);
+                hijo2.push_back(padre1[b]);
+            }
+            for (int c = 6; c < 10; c++){
+                hijo1.push_back(padre1[c]);
+                hijo2.push_back(padre2[c]);
+            }
+            hijos.push_back(hijo1);
+            hijos.push_back(hijo2);
         }
     }
+    return hijos;
+
 }
 
-void GeneticAlgorithm::mutation() {
+std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vector<double>> hijos) {
     std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    for (auto& individual : population) {
+    for (auto& individual : hijos) {
         for (double& gene : individual) {
             // Mutation at a given rate
             if (dis(gen) < mutationRate) {
@@ -116,6 +181,7 @@ void GeneticAlgorithm::mutation() {
             }
         }
     }
+    return hijos;
 }
 
 bool GeneticAlgorithm::shouldStop(int currentGeneration) {
@@ -123,6 +189,8 @@ bool GeneticAlgorithm::shouldStop(int currentGeneration) {
     double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
     double optimalGlobalFitness = 0.0; // Hay que ajustar esto;
 
+    std::cout << bestFitness << std::endl;
+    std::cout << worstFitness << std::endl;
     // |f(⃗xbest)−f(⃗x∗)| ≤ ε
     if (std::abs(bestFitness - optimalGlobalFitness) <= 0.001) {
         return true;
@@ -151,6 +219,6 @@ double GeneticAlgorithm::ackleyFunction(const std::vector<double>& individual) {
         sum1 += std::pow(x_i, 2);
         sum2 += std::cos(2 * M_PI * x_i);
     }
-    double ackley = -20 * std::exp(-0.2 * std::sqrt(sum1 / individual.size())) - std::exp(sum2 / individual.size()) + 20 + M_E;
+    double ackley = -20 * std::exp(-0.2 * std::sqrt(sum1 /  individual.size())) - std::exp(sum2 / individual.size()) + 20 + M_E;
     return ackley;
 }

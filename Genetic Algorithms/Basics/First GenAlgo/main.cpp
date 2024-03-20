@@ -6,6 +6,7 @@
 
 #include "encode.h"
 #include "decode.h"
+#include "GeneticAlgorithm.h"
 
 int countDecimalPlaces(double number) {
     // Like stod in C but inverted jiji
@@ -68,6 +69,15 @@ int main() {
     int totalBitsNeeded = bitsNeeded(x, y, range);
     conversion (x,range);
     std::cout << "Total number of bits needed: " << totalBitsNeeded << std::endl;
+    
+    int population = 100;
+    int num_gen = 100;
+    double cross_rate = 0.9f;
+    double mut_rate = 0.1f;
+
+    GeneticAlgorithm newGen (population, num_gen, cross_rate, mut_rate);
+    newGen.run();
+
 
     return 0;
 }

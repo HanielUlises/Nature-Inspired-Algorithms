@@ -80,7 +80,9 @@
     "stop_token": "cpp",
     "thread": "cpp",
     "cinttypes": "cpp",
-    "semaphore": "cpp"
+    "semaphore": "cpp",
+    "xhash": "cpp",
+    "xstddef": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
