@@ -1,5 +1,4 @@
 #include <string>
-#include <iostream>
 
 int binToDec(std::string line) {
     int decimalNumber = 0;
