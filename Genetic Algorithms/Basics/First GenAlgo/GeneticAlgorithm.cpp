@@ -35,6 +35,7 @@ void GeneticAlgorithm::run() {
         evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
         elitismParents();
 
+        // Analysis of fitness
         double bestFitness = *std::min_element(fitnessValues.begin(), fitnessValues.end());
         double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
         double averageFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0) / fitnessValues.size();
@@ -123,20 +124,17 @@ std::vector<int> GeneticAlgorithm::selection() {
     return selectedParents;
 }
 
-
-
 // Two point crossover
 std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
     std::vector<std::vector<double>> children;
     std::uniform_real_distribution<double> dis(0.0, 1.0);
-    std::uniform_int_distribution<> pointDist(1, population[0].size() - 2); // Ensure valid points
+    std::uniform_int_distribution<> pointDist(1, population[0].size() - 2); 
 
     for (size_t i = 0; i < selectedParents.size() - 1; i += 2) {
         if (dis(gen) < crossoverRate) {
             std::vector<double>& parent1 = population[selectedParents[i]];
             std::vector<double>& parent2 = population[selectedParents[i + 1]];
 
-            // Generate two points for crossover
             int point1 = pointDist(gen);
             int point2 = pointDist(gen);
             // Ensure point1 < point2
