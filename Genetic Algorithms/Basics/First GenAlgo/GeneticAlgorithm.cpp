@@ -3,9 +3,13 @@
 #include <cmath>
 #include <random>
 #include <iostream>
+#include <numeric>
+#define M_PI 3.14159265358979323846
+#define M_E 2.71828182845904523536
 
 std::random_device rd;
 std::mt19937 gen(rd());
+
 
 GeneticAlgorithm::GeneticAlgorithm(int populationSize, int numberOfGenerations, double crossoverRate, double mutationRate)
     : populationSize(populationSize), numberOfGenerations(numberOfGenerations),
@@ -15,14 +19,22 @@ GeneticAlgorithm::GeneticAlgorithm(int populationSize, int numberOfGenerations, 
 GeneticAlgorithm::~GeneticAlgorithm() {
 }
 
-void GeneticAlgorithm::run() {
+void GeneticAlgorithm::run(int option) {
     std::vector<std::vector<double>> child;
-    initializePopulation();
+    initializePopulation(option);
+    std::function<double(const std::vector<double>&)> objectiveFunction;
+    if (option==1){
+        objectiveFunction=std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1);
+    }else if (option==2){
+        objectiveFunction=std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1);    
+    }else{
+        std::cout<<"cuak"<<std::endl;
+    }
 
     for (int i = 0; i < numberOfGenerations; ++i) {
         
         // Functions test
-        evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));    
+        evaluateFitness(objectiveFunction);    
         // evaluateFitness(std::bind(&GeneticAlgorithm::ackleyFunction, this, std::placeholders::_1));
         auto selectedParents = selection();
         //se muere
@@ -33,12 +45,12 @@ void GeneticAlgorithm::run() {
             population.push_back(child[i]);
         }
         evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
+        // evaluateFitness(std::bind(&GeneticAlgorithm::ackleyFunction, this, std::placeholders::_1));
         elitismParents();
 
-        // Analysis of fitness
         double bestFitness = *std::min_element(fitnessValues.begin(), fitnessValues.end());
         double worstFitness = *std::max_element(fitnessValues.begin(), fitnessValues.end());
-        double averageFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0) / fitnessValues.size();
+        double averageFitness = accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0) / fitnessValues.size();
 
         bestFitnessHistory.push_back(bestFitness);
         worstFitnessHistory.push_back(worstFitness);
@@ -47,7 +59,7 @@ void GeneticAlgorithm::run() {
         if (shouldStop(i)) break;
         std::cout<<i<<std::endl;
     }
-    plotConvergenceGraph();
+    //aAplotConvergenceGraph();
 }
 
 void GeneticAlgorithm::elitismParents() {
@@ -75,21 +87,37 @@ void GeneticAlgorithm::elitismParents() {
     fitnessValues.resize(populationSize);
 }
 
-void GeneticAlgorithm::initializePopulation() {
+void GeneticAlgorithm::initializePopulation(int option) {
     population.clear();
 
-    // CHECK
-    std::uniform_real_distribution<double> dis(-2.048, 2.048);
-    int numGenes = 10;
+    if (option==1){
+        std::uniform_real_distribution<double> dis(-2.048, 2.048);
+        int numGenes = 10;
 
-    for (int i = 0; i < populationSize; ++i) {
-        std::vector<double> individual;
-        for (int j = 0; j < numGenes; ++j) {
-            double gene = dis(gen);
-            individual.push_back(gene);
+        for (int i = 0; i < populationSize; ++i) {
+            std::vector<double> individual;
+            for (int j = 0; j < numGenes; ++j) {
+                double gene = dis(gen);
+                individual.push_back(gene);
+            }
+            population.push_back(individual);
         }
-        population.push_back(individual);
+    }else if (option==2){
+        std::uniform_real_distribution<double> dis(-32.768, 32.768);
+        int numGenes = 10;
+
+        for (int i = 0; i < populationSize; ++i) {
+            std::vector<double> individual;
+            for (int j = 0; j < numGenes; ++j) {
+                double gene = dis(gen);
+                individual.push_back(gene);
+            }
+            population.push_back(individual);
+        }
+    }else{
+        std::cout<<"Esta raro nah"<<std::endl;
     }
+
 }
 
 void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<double>&)> objectiveFunction) {
@@ -102,7 +130,7 @@ void GeneticAlgorithm::evaluateFitness(std::function<double(const std::vector<do
 
 std::vector<int> GeneticAlgorithm::selection() {
     std::vector<int> selectedParents;
-    double totalFitness = std::accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0);
+    double totalFitness = accumulate(fitnessValues.begin(), fitnessValues.end(), 0.0);
 
     std::vector<double> probabilities;
     for (double fitness : fitnessValues) {
@@ -128,13 +156,14 @@ std::vector<int> GeneticAlgorithm::selection() {
 std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
     std::vector<std::vector<double>> children;
     std::uniform_real_distribution<double> dis(0.0, 1.0);
-    std::uniform_int_distribution<> pointDist(1, population[0].size() - 2); 
+    std::uniform_int_distribution<> pointDist(1, population[0].size() - 2); // Ensure valid points
 
     for (size_t i = 0; i < selectedParents.size() - 1; i += 2) {
         if (dis(gen) < crossoverRate) {
             std::vector<double>& parent1 = population[selectedParents[i]];
             std::vector<double>& parent2 = population[selectedParents[i + 1]];
 
+            // Generate two points for crossover
             int point1 = pointDist(gen);
             int point2 = pointDist(gen);
             // Ensure point1 < point2

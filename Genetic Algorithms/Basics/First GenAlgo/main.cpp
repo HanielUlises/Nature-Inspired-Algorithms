@@ -74,12 +74,14 @@ int main() {
     */
    
     int population = 100;
-    int num_gen = 100;
+    int num_gen = 500;
     double cross_rate = 0.9f;
     double mut_rate = 0.1f;
 
     GeneticAlgorithm newGen (population, num_gen, cross_rate, mut_rate);
-    newGen.run();
+    //option 1: Rosenbrock
+    //option 2: Ackley
+    newGen.run(1);
 
 
     return 0;

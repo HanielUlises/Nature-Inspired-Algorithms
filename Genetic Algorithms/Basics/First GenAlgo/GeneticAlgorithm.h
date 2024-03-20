@@ -11,7 +11,7 @@ public:
     GeneticAlgorithm(int populationSize, int numberOfGenerations, double crossoverRate, double mutationRate);
     virtual ~GeneticAlgorithm();
 
-    void run();
+    void run(int option);
     void plotConvergenceGraph();
     // Test functions
     double rosenbrockFunction(const std::vector<double>& individual);
@@ -29,7 +29,7 @@ private:
     std::vector<std::vector<double>> population;
     std::vector<double> fitnessValues;
     void elitismParents();
-    void initializePopulation();
+    void initializePopulation(int option);
     void evaluateFitness(std::function<double(const std::vector<double>&)> objectiveFunction);
     std::vector<int> selection();
     std::vector<std::vector<double>> crossover(std::vector<int>& selectedParents);
