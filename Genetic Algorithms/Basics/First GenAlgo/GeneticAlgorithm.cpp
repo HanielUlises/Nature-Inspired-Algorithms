@@ -19,7 +19,7 @@ GeneticAlgorithm::~GeneticAlgorithm() {
 }
 
 void GeneticAlgorithm::run() {
-    std::vector<std::vector<double>> hijos;
+    std::vector<std::vector<double>> child;
     initializePopulation();
 
     for (int i = 0; i < numberOfGenerations; ++i) {
@@ -29,11 +29,11 @@ void GeneticAlgorithm::run() {
         // evaluateFitness(std::bind(&GeneticAlgorithm::ackleyFunction, this, std::placeholders::_1));
         auto selectedParents = selection();
         //se muere
-        hijos=crossover(selectedParents);
-        hijos=mutation(hijos); //hijos mutados
+        child=crossover(selectedParents);
+        child=mutation(child); //child mutados
         
-        for (size_t i = 0; i < hijos.size(); i++){
-            population.push_back(hijos[i]);
+        for (size_t i = 0; i < child.size(); i++){
+            population.push_back(child[i]);
         }
         evaluateFitness(std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1));
         elitismParents();
@@ -127,8 +127,8 @@ std::vector<int> GeneticAlgorithm::selection() {
 // Single point crossover
 std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& selectedParents) {
     std::uniform_real_distribution<> dis(0.0, 1.0);
-    std::vector<std::vector<double>> hijos;
-    std::vector<double> padre1, padre2, hijo1, hijo2;
+    std::vector<std::vector<double>> child;
+    std::vector<double> dad, mom, child1, child2;
 
     for (int i = 0; i < selectedParents.size(); i += 2) {
         if (dis(gen) < crossoverRate) {
@@ -142,33 +142,33 @@ std::vector<std::vector<double>> GeneticAlgorithm::crossover(std::vector<int>& s
 
             //cruza de 2 puntos
             for (int j = 0; j < population[0].size(); ++j) {
-                padre1.push_back(population[selectedParents[i]][j]);
-                padre2.push_back(population[selectedParents[i + 1]][j]);
+                dad.push_back(population[selectedParents[i]][j]);
+                mom.push_back(population[selectedParents[i + 1]][j]);
             }
             for (int a = 0; a < 2; a++){
-                hijo1.push_back(padre1[a]);
-                hijo2.push_back(padre2[a]);
+                dad.push_back(dad[a]);
+                child2.push_back(mom[a]);
             }
             for (int b = 2; b < 6; b++){
-                hijo1.push_back(padre2[b]);
-                hijo2.push_back(padre1[b]);
+                child1.push_back(mom[b]);
+                child2.push_back(dad[b]);
             }
             for (int c = 6; c < 10; c++){
-                hijo1.push_back(padre1[c]);
-                hijo2.push_back(padre2[c]);
+                child1.push_back(dad[c]);
+                child2.push_back(mom[c]);
             }
-            hijos.push_back(hijo1);
-            hijos.push_back(hijo2);
+            child.push_back(child1);
+            child.push_back(child2);
         }
     }
-    return hijos;
+    return child;
 
 }
 
-std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vector<double>> hijos) {
+std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vector<double>> child) {
     std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    for (auto& individual : hijos) {
+    for (auto& individual : child) {
         for (double& gene : individual) {
             // Mutation at a given rate
             if (dis(gen) < mutationRate) {
@@ -179,7 +179,7 @@ std::vector<std::vector<double>> GeneticAlgorithm::mutation(std::vector<std::vec
             }
         }
     }
-    return hijos;
+    return child;
 }
 
 bool GeneticAlgorithm::shouldStop(int currentGeneration) {
