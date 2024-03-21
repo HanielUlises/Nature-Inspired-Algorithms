@@ -2,8 +2,10 @@
 #include "matplotlibcpp.h"
 #include "GeneticAlgorithm.h"
 
+namespace plt = matplotlibcpp;
+
 void GeneticAlgorithm::plotConvergenceGraph(std::string function) {
-    namespace plt = matplotlibcpp;
+    
 
     std::string title = "Convergence Graph ";
     title.append(function);

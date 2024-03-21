@@ -10,7 +10,7 @@ int main() {
     // Individuals
     int population = 100;
     // Generations
-    int num_gen = 150;
+    int num_gen = 100;
     // Crossover rate
     double cross_rate = 0.65f;
     // Mutation rate
@@ -20,10 +20,10 @@ int main() {
     // option 1: Rosenbrock
     // option 2: Ackley
     
-    newGen.binary_performance(1);
+    // newGen.binary_performance(1);
     // newGen.real_performance(1);
     // newGen.binary_performance(2);
-    // newGen.real_performance(2);
+    newGen.real_performance(2);
 
 
     return 0;

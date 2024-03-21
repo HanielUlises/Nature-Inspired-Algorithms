@@ -10,8 +10,44 @@
 // #define M_PI 3.14159265358979323846
 // #define M_E 2.71828182845904523536
 
+// Pseudo-random number generator based on Mersenne Twister algorithm
 std::random_device rd;
 std::mt19937 gen(rd());
+
+double calculateMedian(std::vector<double> values) {
+    size_t n = values.size() / 2;
+    std::nth_element(values.begin(), values.begin() + n, values.end());
+    return values[n];
+}
+
+int countDecimalPlaces(double number) {
+    // Like stod in C but inverted jiji
+    std::string numberAsString = std::to_string(number);
+    // Trim trailing zeros
+    numberAsString.erase(numberAsString.find_last_not_of('0') + 1, std::string::npos); 
+    auto decimalPos = numberAsString.find('.');
+
+     // No decimal point found
+    if (decimalPos == std::string::npos) 
+        return 0;
+
+    return numberAsString.length() - decimalPos - 1; 
+}
+
+int bitsNeeded(double x, double y, double& range) {
+    // Determine the maximum number of decimal places between the two numbers
+    int maxDecimals = std::max(countDecimalPlaces(x), countDecimalPlaces(y));
+    
+    // Formulae implemented
+    // log2(upLim * 10^dec - lowLim * 10^dec)
+    double scaledX = x * std::pow(10, maxDecimals);
+    double scaledY = y * std::pow(10, maxDecimals);
+    
+    // Difference between the scaled numbers
+    range = std::abs(scaledY - scaledX);
+    return std::ceil(std::log2(range));
+}
+
 
 GeneticAlgorithm::GeneticAlgorithm(int populationSize, int numberOfGenerations, double crossoverRate, double mutationRate)
     : populationSize(populationSize), numberOfGenerations(numberOfGenerations),
@@ -26,6 +62,10 @@ void GeneticAlgorithm::real_performance(int option) {
     std::vector<std::vector<double>> child;
     initializePopulation(option);
     std::function<double(const std::vector<double>&)> objectiveFunction;
+
+    std::vector<std::vector<double>> bestFitnessHistoryMatrix;
+    std::vector<std::vector<double>> worstFitnessHistoryMatrix;
+
     if (option==1){
         objectiveFunction=std::bind(&GeneticAlgorithm::rosenbrockFunction, this, std::placeholders::_1);
     }else if (option==2){
@@ -35,11 +75,10 @@ void GeneticAlgorithm::real_performance(int option) {
     }
 
     for (int i = 0; i < numberOfGenerations; ++i) {
-        
         // Functions test
         evaluateFitness(objectiveFunction,1,0.0f,0.0f);
         auto selectedParents = selection();
-        //se muere
+
         child=crossover(selectedParents);
         child=mutation(child); //child mutados
         
@@ -137,34 +176,6 @@ void GeneticAlgorithm::binary_performance(const int option) {
     }else if (option==2){
         plotConvergenceGraph("Ackley function (binary)");
     }
-}
-
-int countDecimalPlaces(double number) {
-    // Like stod in C but inverted jiji
-    std::string numberAsString = std::to_string(number);
-    // Trim trailing zeros
-    numberAsString.erase(numberAsString.find_last_not_of('0') + 1, std::string::npos); 
-    auto decimalPos = numberAsString.find('.');
-
-     // No decimal point found
-    if (decimalPos == std::string::npos) 
-        return 0;
-
-    return numberAsString.length() - decimalPos - 1; 
-}
-
-int bitsNeeded(double x, double y, double& range) {
-    // Determine the maximum number of decimal places between the two numbers
-    int maxDecimals = std::max(countDecimalPlaces(x), countDecimalPlaces(y));
-    
-    // Formulae implemented
-    // log2(upLim * 10^dec - lowLim * 10^dec)
-    double scaledX = x * std::pow(10, maxDecimals);
-    double scaledY = y * std::pow(10, maxDecimals);
-    
-    // Difference between the scaled numbers
-    range = std::abs(scaledY - scaledX);
-    return std::ceil(std::log2(range));
 }
 
 std::vector<double> decodeAllele(std::vector<std::string> bin_string, double lim,double limS){
@@ -275,7 +286,6 @@ void GeneticAlgorithm::initializePopulation(int option) {
 }
 
 void GeneticAlgorithm::elitismParents() {
-
     std::vector<double> temp;
     double temp2; 
     for(int i=0;i<population.size();i++){
@@ -311,6 +321,7 @@ void GeneticAlgorithm::elitismParentsBinary() {
     }
 
     // Sorting the combined vector based on fitness in descending order
+    // NNE
     std::sort(sortedPopulation.begin(), sortedPopulation.end(), [](const IndividualWithFitness& a, const IndividualWithFitness& b) {
         return a.fitness < b.fitness;
     });
