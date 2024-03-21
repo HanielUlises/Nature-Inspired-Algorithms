@@ -2,8 +2,11 @@
 #include "matplotlibcpp.h"
 #include "GeneticAlgorithm.h"
 
-void GeneticAlgorithm::plotConvergenceGraph() {
+void GeneticAlgorithm::plotConvergenceGraph(std::string function) {
     namespace plt = matplotlibcpp;
+
+    std::string title = "Convergence Graph ";
+    title.append(function);
 
     std::vector<int> generations(bestFitnessHistory.size());
     std::iota(generations.begin(), generations.end(), 0);
@@ -15,7 +18,8 @@ void GeneticAlgorithm::plotConvergenceGraph() {
     plt::xlabel("Generation");
     plt::ylabel("Fitness");
     plt::legend();
-    plt::title("Convergence Graph");
+
+    plt::title(title);
 
     plt::show();
 }

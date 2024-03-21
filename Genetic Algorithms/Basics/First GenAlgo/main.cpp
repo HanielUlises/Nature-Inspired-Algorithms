@@ -7,30 +7,23 @@
 #include "GeneticAlgorithm.h"
 
 int main() {
-    /*
-    
-    double x, y;
-    std::cout << "Enter the first number (x): ";
-    std::cin >> x;
-    std::cout << "Enter the second number (y): ";
-    std::cin >> y;
-
-    double range = 0;
-
-    int totalBitsNeeded = bitsNeeded(x, y, range);
-    conversion (x,range);
-    std::cout << "Total number of bits needed: " << totalBitsNeeded << std::endl;
-    */
-   
+    // Individuals
     int population = 100;
-    int num_gen = 100;
-    double cross_rate = 0.9f;
-    double mut_rate = 0.1f;
+    // Generations
+    int num_gen = 150;
+    // Crossover rate
+    double cross_rate = 0.65f;
+    // Mutation rate
+    double mut_rate = 0.05f;
 
     GeneticAlgorithm newGen (population, num_gen, cross_rate, mut_rate);
-    //option 1: Rosenbrock
-    //option 2: Ackley
-    newGen.run2(1);
+    // option 1: Rosenbrock
+    // option 2: Ackley
+    
+    newGen.binary_performance(1);
+    // newGen.real_performance(1);
+    // newGen.binary_performance(2);
+    // newGen.real_performance(2);
 
 
     return 0;
