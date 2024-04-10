@@ -21,7 +21,10 @@ void EvolutionaryAlgorithm::initializePopulation() {
 std::vector<int> EvolutionaryAlgorithm::generateIndividual() {
     std::vector<int> individual(size * size);
     std::iota(individual.begin(), individual.end(), 1);
-    std::random_shuffle(individual.begin(), individual.end()); // Shuffle to generate a random permutation
+    
+    std::mt19937 rng(std::random_device{}());
+    std::shuffle(individual.begin(), individual.end(), rng);
+    
     return individual;
 }
 
@@ -52,17 +55,14 @@ int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) 
 
 void EvolutionaryAlgorithm::selection() {
     // Placeholder for selection logic
-    // Typically, you might use tournament selection, roulette wheel selection, or rank selection
 }
 
 void EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std::vector<int>& parent2) {
     // Placeholder for crossover logic
-    // One common approach is a single-point crossover
 }
 
 void EvolutionaryAlgorithm::mutation(std::vector<int>& individual) {
     // Placeholder for mutation logic
-    // A simple mutation might involve swapping two elements
 }
 
 bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
@@ -82,8 +82,6 @@ void EvolutionaryAlgorithm::solve() {
             mutation(population[i]);
             mutation(population[i+1]);
         }
-
-        // Optionally, implement elitism or other mechanisms to preserve the best individual(s)
 
         // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {
