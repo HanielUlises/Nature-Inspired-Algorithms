@@ -3,6 +3,13 @@
 #define EVOLUTIONARY_ALGORITHM_H
 
 #include <vector>
+struct IndividualWithFitness {
+    std::vector<int> individual;
+    double fitness;
+
+    IndividualWithFitness(std::vector<int> ind, double fit)
+        : individual(std::move(ind)), fitness(fit) {}
+};
 
 class EvolutionaryAlgorithm {
 public:
@@ -21,7 +28,8 @@ private:
     std::vector<int> selection(std::vector<int>fitnessP);
     std::vector<int> tournamentSelection(std::vector<int>&fitnessValues,int tournamentSize);
     std::vector<int> crossover(std::vector<int>& parent1, std::vector<int>& parent2);
-    void mutation(std::vector<int>& individual);
+    std::vector<int> mutation(std::vector<int> individual);
+    std::vector<std::vector<int>> elitism(std::vector<std::vector<int>> population);
     bool isMagicSquare(const std::vector<int>& square);
     void printSolution(const std::vector<int>& solution);
 };

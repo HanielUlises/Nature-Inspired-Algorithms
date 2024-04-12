@@ -172,8 +172,53 @@ std::vector<int> EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std
     return child1;
 }
 
-void EvolutionaryAlgorithm::mutation(std::vector<int>& individual) {
-    // Placeholder for mutation logic
+std::vector<int> EvolutionaryAlgorithm::mutation(std::vector<int> individual) {
+    int sizeChild = individual.size();
+    std::uniform_real_distribution<double> dis(1, sizeChild);
+    std::uniform_real_distribution<double> dis2(1, sizeChild-1);
+    int num_mutation = dis(gen);
+    int i,j;
+    for(size_t k=0; k<num_mutation; k++){
+        i = dis2(gen);
+        j = dis2(gen);
+        int aux = individual[i];
+        individual[i] = individual[j]; 
+        individual[j] = aux;
+    }
+
+    return individual;
+
+}
+std::vector<std::vector<int>> EvolutionaryAlgorithm::elitism(std::vector<std::vector<int>> population){
+    std::vector<int> fitnessP;
+    for(const auto& individual : population){
+        int fitness = calculateFitness (individual);
+        fitnessP.push_back(fitness);
+    }
+        // This vector  will hold individuals along with their fitness
+    std::vector<IndividualWithFitness> sortedPopulation;
+    sortedPopulation.reserve(population.size());
+
+    // Vector with individuals and their corresponding fitness
+    for (size_t i = 0; i < population.size(); ++i) {
+        sortedPopulation.emplace_back(population[i], fitnessP[i]);
+    }
+
+    // Sorting the combined vector based on fitness in descending order
+    // NNE
+    std::sort(sortedPopulation.begin(), sortedPopulation.end(), [](const IndividualWithFitness& a, const IndividualWithFitness& b) {
+        return a.fitness < b.fitness;
+    });
+
+    population.clear();
+    fitnessP.clear();
+
+    // Putting the top individuals back into the population until the desired population size is reached
+    for (size_t i = 0; i < populationSize && i < sortedPopulation.size(); ++i) {
+        population.push_back(sortedPopulation[i].individual);
+        fitnessP.push_back(sortedPopulation[i].fitness);
+    }
+    return population;
 }
 
 bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
@@ -200,14 +245,30 @@ void EvolutionaryAlgorithm::solve() {
 
         // Crossover and Mutation
         std::vector<std::vector<int>> children;
+        
         for (int i = 0; i < populationSize; i += 2) {
-            children.push_back(crossover(population[selectedParents[i]], population[selectedParents[i+1]]));
-            children.push_back(crossover(population[selectedParents[i+1]], population[selectedParents[i]]));
-            break;
-            mutation(population[i]);
-            mutation(population[i+1]);
+            std::vector<int> child1;
+            std::vector<int> child2;
+            child1=crossover(population[selectedParents[i]], population[selectedParents[i+1]]);
+            child1=mutation(child1);
+            children.push_back(child1);
+            child1.clear();
+            child2=crossover(population[selectedParents[i+1]], population[selectedParents[i]]);
+            child2=mutation(child2);
+            children.push_back(child2);
+            child2.clear();
         }
-        break;
+        for(auto child:children){
+            population.push_back(child);
+        }
+        
+        population=elitism(population);
+
+        for(const auto& individual : population){
+            int fitness = calculateFitness (individual);
+            fitnessP.push_back(fitness);
+        }
+        double averageFitness = accumulate(fitnessP.begin(), fitnessP.end(), 0.0) / fitnessP.size();
 
         // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {
@@ -215,6 +276,10 @@ void EvolutionaryAlgorithm::solve() {
                 std::cout << "Magic square found in generation " << gen << ":\n";
                 printSolution(individual);
                 return;
+            }else{
+                std::cout<<"Promedio "<<averageFitness<<std::endl;
+
+                
             }
         }
     }
