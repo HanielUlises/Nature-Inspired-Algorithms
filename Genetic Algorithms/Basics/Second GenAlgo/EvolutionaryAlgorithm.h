@@ -26,7 +26,7 @@ private:
     std::vector<int> generateIndividual();
     int calculateFitness(const std::vector<int>& individual);
     std::vector<int> selection(std::vector<int>fitnessP);
-    std::vector<int> tournamentSelection(std::vector<int>&fitnessValues,int tournamentSize);
+    std::vector<int> tournamentSelection(std::vector<int>fitnessValues,int tournamentSize);
     std::vector<int> crossover(std::vector<int>& parent1, std::vector<int>& parent2);
     std::vector<int> mutation(std::vector<int> individual);
     std::vector<std::vector<int>> elitism(std::vector<std::vector<int>> population);

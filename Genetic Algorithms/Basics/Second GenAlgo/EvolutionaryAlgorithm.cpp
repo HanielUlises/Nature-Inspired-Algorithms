@@ -31,19 +31,21 @@ std::vector<int> EvolutionaryAlgorithm::generateIndividual() {
 }
 
 int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) {
-    int magicConstant = size * (size * size + 1) / 2;
+    int magicConstant = (size * (size * size + 1)) / 2;
     int fitness = 0;
 
     // Check rows and columns
+    int cont=0;
     for (int i = 0; i < size; ++i) {
         int rowSum = 0, colSum = 0;
         for (int j = 0; j < size; ++j) {
-            rowSum += individual[i * size + j];
-            colSum += individual[j * size + i];
+                rowSum += individual[i * size + j];
+                colSum += individual[j * size + i];
         }
         fitness += abs(magicConstant - rowSum) + abs(magicConstant - colSum);
+        cont++;
     }
-
+    // Check diagonals
     // Check diagonals
     int diagSum1 = 0, diagSum2 = 0;
     for (int i = 0; i < size; ++i) {
@@ -51,7 +53,6 @@ int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) 
         diagSum2 += individual[(size - i - 1) * size + i];
     }
     fitness += abs(magicConstant - diagSum1) + abs(magicConstant - diagSum2);
-
     return fitness;
 }
 
@@ -79,7 +80,7 @@ std::vector<int> EvolutionaryAlgorithm::selection(std::vector<int>fitnessP) {
     return selectedParents;
 }
 
-std::vector<int> EvolutionaryAlgorithm::tournamentSelection(std::vector<int>&fitnessValues,int tournamentSize) {
+std::vector<int> EvolutionaryAlgorithm::tournamentSelection(std::vector<int>fitnessValues,int tournamentSize) {
     std::vector<int> selectedParents;
     std::uniform_int_distribution<int> dis(0, populationSize - 1);
 
@@ -228,8 +229,7 @@ bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
 
 void EvolutionaryAlgorithm::solve() {
     initializePopulation();
-    
-    for (int gen = 0; gen < generations; ++gen) {
+    for (int gener = 0; gener < generations; ++gener) {
         // Selection
         std::vector<int> fitnessP;
         for(const auto& individual : population){
@@ -237,10 +237,11 @@ void EvolutionaryAlgorithm::solve() {
             fitnessP.push_back(fitness);
         }
         //tournament selection
-        //int tournamentSize = 2 + gen * (10 - 2) / generations;
-        //selectionTournament();
+        //int tournamentSize = 2 + gener * (10 - 2) / generations;
+        //auto selectedParents = tournamentSelection(fitnessP,tournamentSize);
 
         //stochastic selection
+        int tournamentSize = 2 + gener * (10 - 2) / generations;
         auto selectedParents = selection(fitnessP);
 
         // Crossover and Mutation
@@ -273,13 +274,11 @@ void EvolutionaryAlgorithm::solve() {
         // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {
             if (isMagicSquare(individual)) {
-                std::cout << "Magic square found in generation " << gen << ":\n";
+                std::cout << "Magic square found in generation " << gener << ":\n";
                 printSolution(individual);
                 return;
             }else{
                 std::cout<<"Promedio "<<averageFitness<<std::endl;
-
-                
             }
         }
     }
@@ -287,6 +286,12 @@ void EvolutionaryAlgorithm::solve() {
 }
 
 void EvolutionaryAlgorithm::printSolution(const std::vector<int>& solution) {
+    for (const auto num:solution)
+    {
+        std::cout<<num;
+    }
+    std::cout<<std::endl;
+    
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             std::cout << solution[i * size + j] << ' ';
