@@ -5,6 +5,8 @@
 #include <numeric>
 #include <random>
 #include <ctime>
+std::random_device rd;
+std::mt19937 gen(rd());
 
 EvolutionaryAlgorithm::EvolutionaryAlgorithm(int size, int populationSize, int generations)
     : size(size), populationSize(populationSize), generations(generations) {
@@ -53,12 +55,121 @@ int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) 
     return fitness;
 }
 
-void EvolutionaryAlgorithm::selection() {
-    // Placeholder for selection logic
+std::vector<int> EvolutionaryAlgorithm::selection(std::vector<int>fitnessP) {
+    std::vector<int> selectedParents;
+    double totalFitness = accumulate(fitnessP.begin(), fitnessP.end(), 0.0);
+
+    std::vector<double> probabilities;
+    for (double fitness : fitnessP) {
+        probabilities.push_back(fitness / totalFitness);
+    }
+
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+    for (int i = 0; i < populationSize; ++i) {
+        double r = dis(gen);
+        double cumulativeProbability = 0.0;
+        for (int j = 0; j < probabilities.size(); ++j) {
+            cumulativeProbability += probabilities[j];
+            if (cumulativeProbability > r) {
+                selectedParents.push_back(j);
+                break;
+            }
+        }
+    }
+    return selectedParents;
 }
 
-void EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std::vector<int>& parent2) {
-    // Placeholder for crossover logic
+std::vector<int> EvolutionaryAlgorithm::tournamentSelection(std::vector<int>&fitnessValues,int tournamentSize) {
+    std::vector<int> selectedParents;
+    std::uniform_int_distribution<int> dis(0, populationSize - 1);
+
+    for (int i = 0; i < populationSize; ++i) {
+        double bestFitness = std::numeric_limits<double>::max();
+        int bestIndividual = -1;
+        
+        // Run a tournament
+        for (int j = 0; j < tournamentSize; ++j) {
+            int contenderIndex = dis(gen);
+            if (fitnessValues[contenderIndex] < bestFitness) {
+                bestFitness = fitnessValues[contenderIndex];
+                bestIndividual = contenderIndex;
+            }
+        }
+
+        selectedParents.push_back(bestIndividual);
+    }
+    return selectedParents;
+}
+bool isPair(int num){
+    if( num % 2 ==0 )return true;
+    else return false;
+}
+
+int notBusy(std::vector<int> busynum, int numA){
+    int boole;
+    for(auto num:busynum){
+        if(num==numA){
+            boole=1;
+            break;
+        }else{ boole=0;}
+    }
+    return boole;
+}
+std::vector<int> EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std::vector<int>& parent2) {
+    int sizeParent = parent1.size();
+    std::vector<int> child1;
+    std::vector<int> child2;
+    std::vector<int> busynum;
+    int sizeSubString = 0;
+    if(isPair(sizeParent))sizeSubString = (sizeParent-2)/2;
+    else sizeSubString = ((sizeParent-1)/2);
+
+    for(size_t i=0; i<sizeSubString+2; i++){
+        if(i<2){
+            child1.push_back(0);
+        }else {
+            child1.push_back(parent1[i]);
+            busynum.push_back(parent1[i]);
+        }
+    }
+    int j = sizeSubString+2;
+    for (size_t i = sizeSubString+2; i < sizeParent; i++){
+        
+        if(j<sizeParent){
+            int allel = parent2[j];
+            bool boole=notBusy(busynum,allel);
+            if(boole==0){
+                child1.push_back(allel);
+                busynum.push_back(allel);
+            }else{
+                i--;
+            }
+        }else{
+            int allel = parent2[j-sizeParent];
+            bool boole=notBusy(busynum,allel);
+            if(boole==0){
+                child1.push_back(allel);
+                busynum.push_back(allel);
+            }else{
+                i--;
+            }
+        }
+        j++;
+
+    }
+    int k=0;
+    for(size_t i=0; i<2; i++){
+        int allel = parent2[k];
+        bool boole=notBusy(busynum,allel);
+        if(boole==0){
+            child1[i]=allel;
+        }else{
+            i--;
+        }
+        k++;
+    }
+    
+    return child1;
 }
 
 void EvolutionaryAlgorithm::mutation(std::vector<int>& individual) {
@@ -72,16 +183,31 @@ bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
 
 void EvolutionaryAlgorithm::solve() {
     initializePopulation();
+    
     for (int gen = 0; gen < generations; ++gen) {
         // Selection
-        selection();
+        std::vector<int> fitnessP;
+        for(const auto& individual : population){
+            int fitness = calculateFitness (individual);
+            fitnessP.push_back(fitness);
+        }
+        //tournament selection
+        //int tournamentSize = 2 + gen * (10 - 2) / generations;
+        //selectionTournament();
+
+        //stochastic selection
+        auto selectedParents = selection(fitnessP);
 
         // Crossover and Mutation
+        std::vector<std::vector<int>> children;
         for (int i = 0; i < populationSize; i += 2) {
-            crossover(population[i], population[i+1]);
+            children.push_back(crossover(population[selectedParents[i]], population[selectedParents[i+1]]));
+            children.push_back(crossover(population[selectedParents[i+1]], population[selectedParents[i]]));
+            break;
             mutation(population[i]);
             mutation(population[i+1]);
         }
+        break;
 
         // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {

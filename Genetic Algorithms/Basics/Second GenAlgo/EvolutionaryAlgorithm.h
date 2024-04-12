@@ -18,8 +18,9 @@ private:
     void initializePopulation();
     std::vector<int> generateIndividual();
     int calculateFitness(const std::vector<int>& individual);
-    void selection();
-    void crossover(std::vector<int>& parent1, std::vector<int>& parent2);
+    std::vector<int> selection(std::vector<int>fitnessP);
+    std::vector<int> tournamentSelection(std::vector<int>&fitnessValues,int tournamentSize);
+    std::vector<int> crossover(std::vector<int>& parent1, std::vector<int>& parent2);
     void mutation(std::vector<int>& individual);
     bool isMagicSquare(const std::vector<int>& square);
     void printSolution(const std::vector<int>& solution);
