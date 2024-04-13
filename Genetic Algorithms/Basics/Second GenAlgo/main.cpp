@@ -1,8 +1,8 @@
 #include "EvolutionaryAlgorithm.h"
 
 int main (){
-    int size = 6; // e.g. 4x4 square
-    int population_size = 1000;
+    int size = 4; // e.g. 4x4 square
+    int population_size = 600;
     int generations = 5000;
     //  Cross rate
     double cross_rate = 1.0f;

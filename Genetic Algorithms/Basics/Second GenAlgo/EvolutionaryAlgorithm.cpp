@@ -429,7 +429,6 @@ void EvolutionaryAlgorithm::solve() {
             }
 
         }
-        std::cout<<"donde se rompe"<<std::endl;
         for(auto child:children){
             population.push_back(child);
         }
@@ -468,11 +467,6 @@ void EvolutionaryAlgorithm::solve() {
 }
 
 void EvolutionaryAlgorithm::printSolution(const std::vector<int>& solution) {
-    for (const auto num:solution)
-    {
-        std::cout<<num;
-    }
-    std::cout<<std::endl;
     
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
