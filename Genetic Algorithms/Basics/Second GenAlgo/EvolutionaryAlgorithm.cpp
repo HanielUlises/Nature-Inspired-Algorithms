@@ -454,11 +454,10 @@ void EvolutionaryAlgorithm::solve() {
                 printSolution(individual);
                 plotConvergenceGraph(averageFitnessHistory,bestFitnessHistory,worstFitnessHistory);
                 return;
-            }else{
-                std::cout<<"Promedio: "<<averageFitness<<"  |  Mejor: "<<bestFitness;
-                std::cout<<"  |  Peor:"<<worstFitness<<std::endl;
             }
         }
+        std::cout<<"Promedio: "<<averageFitness<<"  |  Mejor: "<<bestFitness;
+        std::cout<<"  |  Peor:"<<worstFitness<<std::endl;
         
     }
     std::cout << "Solution not found in " << generations << " generations.\n";
