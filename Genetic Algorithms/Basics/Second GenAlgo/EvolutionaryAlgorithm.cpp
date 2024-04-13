@@ -5,11 +5,12 @@
 #include <numeric>
 #include <random>
 #include <ctime>
+#include "ploteado.h"
 std::random_device rd;
 std::mt19937 gen(rd());
 
-EvolutionaryAlgorithm::EvolutionaryAlgorithm(int size, int populationSize, int generations)
-    : size(size), populationSize(populationSize), generations(generations) {
+EvolutionaryAlgorithm::EvolutionaryAlgorithm(int size, int populationSize, int generations, double cross_rate, double  mut_rate)
+    : size(size), populationSize(populationSize), generations(generations), cross_rate(cross_rate),mut_rate(mut_rate){
     std::srand(static_cast<unsigned int>(std::time(nullptr))); // Seed for random number generation
 }
 
@@ -101,6 +102,7 @@ std::vector<int> EvolutionaryAlgorithm::tournamentSelection(std::vector<int>fitn
     }
     return selectedParents;
 }
+
 bool isPair(int num){
     if( num % 2 ==0 )return true;
     else return false;
@@ -116,7 +118,8 @@ int notBusy(std::vector<int> busynum, int numA){
     }
     return boole;
 }
-std::vector<int> EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std::vector<int>& parent2) {
+
+std::vector<int> EvolutionaryAlgorithm::crossoverOX(std::vector<int>& parent1, std::vector<int>& parent2) {
     int sizeParent = parent1.size();
     std::vector<int> child1;
     std::vector<int> child2;
@@ -124,6 +127,7 @@ std::vector<int> EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std
     int sizeSubString = 0;
     if(isPair(sizeParent))sizeSubString = (sizeParent-2)/2;
     else sizeSubString = ((sizeParent-1)/2);
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
 
     for(size_t i=0; i<sizeSubString+2; i++){
         if(i<2){
@@ -173,23 +177,164 @@ std::vector<int> EvolutionaryAlgorithm::crossover(std::vector<int>& parent1, std
     return child1;
 }
 
-std::vector<int> EvolutionaryAlgorithm::mutation(std::vector<int> individual) {
+int chooseCrossingPoint(int size, int busy){
+    std::uniform_int_distribution dis(0, size-1);
+    bool keep=true;
+    int point;
+    while(keep){
+        point = dis(gen);
+        if (point!=busy)break;
+    }
+    return point;
+}
+
+int position(std::vector<int> child, int numA){
+    int cont=0;
+    for(auto num:child){
+        if(num==numA){
+            return cont;
+            break;
+        }else{ cont++;}
+    }
+    return cont;
+}
+
+bool isBusyPMX(std::vector<int> busynum, int numA){
+    bool boole;
+    for(auto num:busynum){
+        if(num==numA){
+            boole=true;
+            return boole;
+            break;
+        }else{boole=false;}
+    }
+    return boole;
+}
+
+std::vector<std::vector<int>> EvolutionaryAlgorithm::crossoverPMX(std::vector<int>& parent1, std::vector<int>& parent2) {
+    std::vector<std::vector<int>> children;
+    std::vector<int> child1;
+    std::vector<int> child2;
+    std::vector<int> busynum1;
+    std::vector<int> busynum2;
+
+    int point1=chooseCrossingPoint(parent1.size(),parent1.size());
+    int point2=chooseCrossingPoint(parent1.size(),point1);
+    
+    if(point1<point2){
+        for (size_t i = 0; i < parent1.size(); i++){
+            if(i>=point1 && i<=point2){
+                child1.push_back(parent2[i]);
+                busynum1.push_back(parent2[i]);
+                child2.push_back(parent1[i]);
+                busynum2.push_back(parent1[i]);
+            }else{
+                child1.push_back(0);
+                child2.push_back(0);
+            }
+        }
+    }else if(point1>point2){
+        for (size_t i = 0; i < parent1.size(); i++){
+            if(i>=point2 && i<=point1){
+                child1.push_back(parent2[i]);
+                busynum1.push_back(parent2[i]);
+                child2.push_back(parent1[i]);
+                busynum2.push_back(parent1[i]);
+            }else{
+                child1.push_back(0);
+                child2.push_back(0);
+            }
+        }
+    }else{
+        std::cout<<"wiuwiuwiu pollichia";
+    }
+
+    for (size_t i = 0; i < child1.size(); i++){
+        if(child1[i]==0 && child2[i]==0){
+            int mape=parent1[i];
+            int mape2=parent2[i];
+            bool boole=isBusyPMX(busynum1,mape);
+            bool boole2=isBusyPMX(busynum2,mape2);
+            if(boole==false){
+                child1[i]=mape;
+            }else{
+                int pos=position(child1,mape);
+                child1[i]=parent1[pos];
+            }
+            if(boole2==false){
+                child2[i]=mape2;
+            }else{
+                int pos=position(child2,mape2);
+                child2[i]=parent2[pos];
+            }
+        }
+    }
+    
+    children.push_back(child1);
+    children.push_back(child2);
+    return children;
+}
+
+std::vector<int> EvolutionaryAlgorithm::mutationIn(std::vector<int> individual) {
     int sizeChild = individual.size();
+    std::uniform_real_distribution<double> dis3(0.0, 1.0);
     std::uniform_real_distribution<double> dis(1, sizeChild);
     std::uniform_real_distribution<double> dis2(1, sizeChild-1);
     int num_mutation = dis(gen);
     int i,j;
     for(size_t k=0; k<num_mutation; k++){
-        i = dis2(gen);
-        j = dis2(gen);
-        int aux = individual[i];
-        individual[i] = individual[j]; 
-        individual[j] = aux;
+        if(dis3(gen)<mut_rate){
+            i = dis2(gen);
+            j = dis2(gen);
+            int aux = individual[i];
+            individual[i] = individual[j]; 
+            individual[j] = aux;
+        }
+        
     }
+    return individual;
+}
 
+std::vector<int> EvolutionaryAlgorithm::mutationDes(std::vector<int> individual) {
+
+    int sizeChild = individual.size();
+    std::uniform_real_distribution<double> dis3(0.0, 1.0);
+    std::uniform_int_distribution dis(1, sizeChild);
+    std::uniform_int_distribution dis2(1, sizeChild-1);
+    int num_mutation = dis(gen);
+    int i,j;
+
+    //insercicion
+    for(size_t k=0; k<num_mutation; k++){ //for(size_t k=0; k<num_mutation; k++){
+        if(dis3(gen)<mut_rate){
+            i = dis2(gen);
+            j = dis2(gen);
+            if(i<j){
+                int aux = individual[j]; //elemento q voy a mover
+                int dif = j-i;
+                for(size_t w=i; w<=j;w++){
+                    int aux2=individual[w];
+                    individual[w]=aux;
+                    aux=aux2;
+                }
+            }else if(i>j){
+                int aux = individual[i]; //elemento q voy a mover
+                int dif = i-j;
+                for(size_t w=j; w<=i;w++){
+                    int aux2=individual[w];
+                    individual[w]=aux;
+                    aux=aux2;
+                }
+            }else{
+                k--;
+            }
+            
+        }
+    }
     return individual;
 
 }
+
 std::vector<std::vector<int>> EvolutionaryAlgorithm::elitism(std::vector<std::vector<int>> population){
     std::vector<int> fitnessP;
     for(const auto& individual : population){
@@ -228,8 +373,18 @@ bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
 }
 
 void EvolutionaryAlgorithm::solve() {
+    // create population
+    
+    std::uniform_real_distribution<double> disCross(0.0, 1.0);
+    std::vector<double> averageFitnessHistory;
+    std::vector<double> bestFitnessHistory;
+    std::vector<double> worstFitnessHistory;
     initializePopulation();
+    
     for (int gener = 0; gener < generations; ++gener) {
+        double averageFitness;
+        double bestFitness;
+        double worstFitness;
         // Selection
         std::vector<int> fitnessP;
         for(const auto& individual : population){
@@ -237,28 +392,44 @@ void EvolutionaryAlgorithm::solve() {
             fitnessP.push_back(fitness);
         }
         //tournament selection
-        //int tournamentSize = 2 + gener * (10 - 2) / generations;
-        //auto selectedParents = tournamentSelection(fitnessP,tournamentSize);
+        int tournamentSize = 2;
+        auto selectedParents = tournamentSelection(fitnessP,2);
 
         //stochastic selection
-        int tournamentSize = 2 + gener * (10 - 2) / generations;
-        auto selectedParents = selection(fitnessP);
+        //auto selectedParents = selection(fitnessP);
 
         // Crossover and Mutation
         std::vector<std::vector<int>> children;
-        
         for (int i = 0; i < populationSize; i += 2) {
             std::vector<int> child1;
             std::vector<int> child2;
-            child1=crossover(population[selectedParents[i]], population[selectedParents[i+1]]);
-            child1=mutation(child1);
-            children.push_back(child1);
-            child1.clear();
-            child2=crossover(population[selectedParents[i+1]], population[selectedParents[i]]);
-            child2=mutation(child2);
-            children.push_back(child2);
-            child2.clear();
+            std::vector<std::vector<int>> childrenaux;
+
+            if(disCross(gen)<cross_rate){
+                childrenaux=crossoverPMX(population[selectedParents[i]], population[selectedParents[i+1]]);
+                child1=childrenaux[0];
+                child1=mutationIn(child1);
+                children.push_back(child1);
+                child1.clear();
+                child2=childrenaux[1];
+                child2=mutationIn(child2);
+                children.push_back(child2);
+                child2.clear();
+                childrenaux.clear();
+                /*
+                child1=crossoverOX(population[selectedParents[i]], population[selectedParents[i+1]]);
+                child1=mutationIn(child1);//child1=mutationDes(child1);
+                children.push_back(child1);
+                child1.clear();
+                child2=crossoverOX(population[selectedParents[i+1]], population[selectedParents[i]]);
+                child2=mutationIn(child2);//child1=mutationDes(child1);
+                children.push_back(child2);
+                child2.clear();
+                */
+            }
+
         }
+        std::cout<<"donde se rompe"<<std::endl;
         for(auto child:children){
             population.push_back(child);
         }
@@ -269,20 +440,31 @@ void EvolutionaryAlgorithm::solve() {
             int fitness = calculateFitness (individual);
             fitnessP.push_back(fitness);
         }
-        double averageFitness = accumulate(fitnessP.begin(), fitnessP.end(), 0.0) / fitnessP.size();
+        averageFitness = accumulate(fitnessP.begin(), fitnessP.end(), 0.0) / fitnessP.size();
+        bestFitness = *std::min_element(fitnessP.begin(), fitnessP.end());
+        worstFitness = *std::max_element(fitnessP.begin(), fitnessP.end());
+
+        averageFitnessHistory.push_back(averageFitness);
+        bestFitnessHistory.push_back(bestFitness);
+        worstFitnessHistory.push_back(worstFitness);
 
         // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {
             if (isMagicSquare(individual)) {
                 std::cout << "Magic square found in generation " << gener << ":\n";
                 printSolution(individual);
+                plotConvergenceGraph(averageFitnessHistory,bestFitnessHistory,worstFitnessHistory);
                 return;
             }else{
-                std::cout<<"Promedio "<<averageFitness<<std::endl;
+                std::cout<<"Promedio: "<<averageFitness<<"  |  Mejor: "<<bestFitness;
+                std::cout<<"  |  Peor:"<<worstFitness<<std::endl;
             }
         }
+        
     }
     std::cout << "Solution not found in " << generations << " generations.\n";
+    std::cout << "Best: " << bestFitnessHistory[bestFitnessHistory.size()-1] << std::endl;
+    plotConvergenceGraph(averageFitnessHistory,bestFitnessHistory,worstFitnessHistory);
 }
 
 void EvolutionaryAlgorithm::printSolution(const std::vector<int>& solution) {

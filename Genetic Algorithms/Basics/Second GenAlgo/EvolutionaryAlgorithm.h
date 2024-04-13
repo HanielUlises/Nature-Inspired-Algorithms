@@ -13,13 +13,15 @@ struct IndividualWithFitness {
 
 class EvolutionaryAlgorithm {
 public:
-    EvolutionaryAlgorithm(int size, int populationSize, int generations);
+    EvolutionaryAlgorithm(int size, int populationSize, int generations, double cross_rate, double mut_rate);
     void solve();
 
 private:
     int size; // Size of the magic square
     int populationSize; // Number of individuals in the population
     int generations; // Number of generations to evolve
+    double cross_rate;
+    double mut_rate;
     std::vector<std::vector<int>> population; // Population of solutions
 
     void initializePopulation();
@@ -27,8 +29,10 @@ private:
     int calculateFitness(const std::vector<int>& individual);
     std::vector<int> selection(std::vector<int>fitnessP);
     std::vector<int> tournamentSelection(std::vector<int>fitnessValues,int tournamentSize);
-    std::vector<int> crossover(std::vector<int>& parent1, std::vector<int>& parent2);
-    std::vector<int> mutation(std::vector<int> individual);
+    std::vector<int> crossoverOX(std::vector<int>& parent1, std::vector<int>& parent2);
+    std::vector<std::vector<int>> crossoverPMX(std::vector<int>& parent1, std::vector<int>& parent2);
+    std::vector<int> mutationIn(std::vector<int> individual);
+    std::vector<int> mutationDes(std::vector<int> individual);
     std::vector<std::vector<int>> elitism(std::vector<std::vector<int>> population);
     bool isMagicSquare(const std::vector<int>& square);
     void printSolution(const std::vector<int>& solution);
