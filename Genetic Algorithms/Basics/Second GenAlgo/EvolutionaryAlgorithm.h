@@ -38,6 +38,8 @@ private:
     std::vector<int> mutationDes(std::vector<int> individual);
     std::vector<std::vector<int>> elitism(std::vector<std::vector<int>> population);
     bool isMagicSquare(const std::vector<int>& square);
+    int maximizeSuccessCount(const std::vector<int>& square);
+    int minimizeMagicConstantError(const std::vector<int>& square);
     void printSolution(const std::vector<int>& solution);
 };
 

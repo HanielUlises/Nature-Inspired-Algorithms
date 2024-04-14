@@ -32,7 +32,7 @@ std::vector<int> EvolutionaryAlgorithm::generateIndividual() {
 }
 
 int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) {
-    // n * (n²+1)
+    // n * (n²+1)/2
     int magicConstant = (size * (size * size + 1)) / 2;
     int fitness = 0;
 
@@ -47,8 +47,10 @@ int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) 
         fitness += abs(magicConstant - rowSum) + abs(magicConstant - colSum);
         cont++;
     }
+
     // Check diagonals
     // Check diagonals
+
     int diagSum1 = 0, diagSum2 = 0;
     for (int i = 0; i < size; ++i) {
         diagSum1 += individual[i * size + i];
@@ -272,8 +274,8 @@ std::vector<int> EvolutionaryAlgorithm::mutationDes(std::vector<int> individual)
     int num_mutation = dis(gen);
     int i,j;
 
-    //insercicion
-    for(size_t k=0; k<num_mutation; k++){ //for(size_t k=0; k<num_mutation; k++){
+
+    for(size_t k=0; k<num_mutation; k++){
         if(dis3(gen)<mut_rate){
             i = dis2(gen);
             j = dis2(gen);
@@ -340,6 +342,61 @@ bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
     return calculateFitness(square) == 0;
 }
 
+int EvolutionaryAlgorithm::maximizeSuccessCount(const std::vector<int>& square) {
+    int successCount = 0;
+    int magicConstant = size * (size * size + 1) / 2;
+
+    // Row and column sum
+    for (int i = 0; i < size; ++i) {
+        int rowSum = 0, colSum = 0;
+        for (int j = 0; j < size; ++j) {
+            rowSum += square[i * size + j];
+            colSum += square[j * size + i];
+        }
+        if (rowSum == magicConstant) ++successCount;
+        if (colSum == magicConstant) ++successCount;
+    }
+
+    // Diagonal sum
+    int diagSum1 = 0, diagSum2 = 0;
+    for (int i = 0; i < size; ++i) {
+        diagSum1 += square[i * size + i];
+        diagSum2 += square[i * size + (size - i - 1)];
+    }
+    if (diagSum1 == magicConstant) ++successCount;
+    if (diagSum2 == magicConstant) ++successCount;
+
+    return successCount;
+}
+
+int EvolutionaryAlgorithm::minimizeMagicConstantError(const std::vector<int>& square) {
+    int error = 0;
+    int magicConstant = size * (size * size + 1) / 2;
+
+    // Note: Formula based error
+    // Row and column error
+    for (int i = 0; i < size; ++i) {
+        int rowSum = 0, colSum = 0;
+        for (int j = 0; j < size; ++j) {
+            rowSum += square[i * size + j];
+            colSum += square[j * size + i];
+        }
+        error += std::abs(magicConstant - rowSum);
+        error += std::abs(magicConstant - colSum);
+    }
+
+    // Diagonal error
+    int diagSum1 = 0, diagSum2 = 0;
+    for (int i = 0; i < size; ++i) {
+        diagSum1 += square[i * size + i];
+        diagSum2 += square[i * size + (size - i - 1)];
+    }
+    error += std::abs(magicConstant - diagSum1);
+    error += std::abs(magicConstant - diagSum2);
+
+    return error;
+}
+
 void EvolutionaryAlgorithm::solve() {
     initializePopulation();
 
@@ -348,6 +405,7 @@ void EvolutionaryAlgorithm::solve() {
     std::vector<double> worstFitnessHistory;
     
     for (int gener = 0; gener < generations; ++gener) {
+        std::vector<IndividualWithFitness> evaluatedPopulation;
         std::vector<int> fitnessP;
         for(const auto& individual : population){
             int fitness = calculateFitness(individual);
