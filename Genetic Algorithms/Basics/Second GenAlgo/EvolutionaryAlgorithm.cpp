@@ -5,6 +5,8 @@
 #include <numeric>
 #include <random>
 #include <ctime>
+#include <utility>
+
 #include "ploteado.h"
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -32,31 +34,34 @@ std::vector<int> EvolutionaryAlgorithm::generateIndividual() {
 }
 
 int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) {
-    // n * (n²+1)/2
-    int magicConstant = (size * (size * size + 1)) / 2;
-    int fitness = 0;
+    int magicConstant = size * (size * size + 1) / 2;
+    int errorSum = 0;
+    int successCount = 0;
 
     // Check rows and columns
-    int cont=0;
     for (int i = 0; i < size; ++i) {
         int rowSum = 0, colSum = 0;
         for (int j = 0; j < size; ++j) {
-                rowSum += individual[i * size + j];
-                colSum += individual[j * size + i];
+            rowSum += individual[i * size + j];
+            colSum += individual[j * size + i];
         }
-        fitness += abs(magicConstant - rowSum) + abs(magicConstant - colSum);
-        cont++;
+        errorSum += abs(magicConstant - rowSum) + abs(magicConstant - colSum);
+        if (rowSum == magicConstant) ++successCount;
+        if (colSum == magicConstant) ++successCount;
     }
 
     // Check diagonals
-
     int diagSum1 = 0, diagSum2 = 0;
     for (int i = 0; i < size; ++i) {
         diagSum1 += individual[i * size + i];
         diagSum2 += individual[(size - i - 1) * size + i];
     }
-    fitness += abs(magicConstant - diagSum1) + abs(magicConstant - diagSum2);
-    return fitness;
+    errorSum += abs(magicConstant - diagSum1) + abs(magicConstant - diagSum2);
+    if (diagSum1 == magicConstant) ++successCount;
+    if (diagSum2 == magicConstant) ++successCount;
+
+    const double successWeight = 0.5;
+    return errorSum - static_cast<int>(successCount * successWeight);
 }
 
 std::vector<int> EvolutionaryAlgorithm::selection(std::vector<int>fitnessP) {
@@ -388,7 +393,7 @@ void EvolutionaryAlgorithm::solve() {
             int fitness = calculateFitness(individual);
             fitnessP.push_back(fitness);
             if (fitness == 0) {
-                std::cout << "Magic square found in generation " << gener << ":\n";
+                std::cout << "\nMagic square found in generation " << gener << ":\n";
                 printSolution(individual);
                 plotConvergenceGraph(averageFitnessHistory, bestFitnessHistory, worstFitnessHistory);
                 return;
