@@ -49,7 +49,6 @@ int EvolutionaryAlgorithm::calculateFitness(const std::vector<int>& individual) 
     }
 
     // Check diagonals
-    // Check diagonals
 
     int diagSum1 = 0, diagSum2 = 0;
     for (int i = 0; i < size; ++i) {
@@ -340,61 +339,6 @@ std::vector<std::vector<int>> EvolutionaryAlgorithm::elitism(std::vector<std::ve
 bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
     // This method utilizes calculateFitness and checks if the fitness is 0, indicating a perfect magic square
     return calculateFitness(square) == 0;
-}
-
-int EvolutionaryAlgorithm::maximizeSuccessCount(const std::vector<int>& square) {
-    int successCount = 0;
-    int magicConstant = size * (size * size + 1) / 2;
-
-    // Row and column sum
-    for (int i = 0; i < size; ++i) {
-        int rowSum = 0, colSum = 0;
-        for (int j = 0; j < size; ++j) {
-            rowSum += square[i * size + j];
-            colSum += square[j * size + i];
-        }
-        if (rowSum == magicConstant) ++successCount;
-        if (colSum == magicConstant) ++successCount;
-    }
-
-    // Diagonal sum
-    int diagSum1 = 0, diagSum2 = 0;
-    for (int i = 0; i < size; ++i) {
-        diagSum1 += square[i * size + i];
-        diagSum2 += square[i * size + (size - i - 1)];
-    }
-    if (diagSum1 == magicConstant) ++successCount;
-    if (diagSum2 == magicConstant) ++successCount;
-
-    return successCount;
-}
-
-int EvolutionaryAlgorithm::minimizeMagicConstantError(const std::vector<int>& square) {
-    int error = 0;
-    int magicConstant = size * (size * size + 1) / 2;
-
-    // Note: Formula based error
-    // Row and column error
-    for (int i = 0; i < size; ++i) {
-        int rowSum = 0, colSum = 0;
-        for (int j = 0; j < size; ++j) {
-            rowSum += square[i * size + j];
-            colSum += square[j * size + i];
-        }
-        error += std::abs(magicConstant - rowSum);
-        error += std::abs(magicConstant - colSum);
-    }
-
-    // Diagonal error
-    int diagSum1 = 0, diagSum2 = 0;
-    for (int i = 0; i < size; ++i) {
-        diagSum1 += square[i * size + i];
-        diagSum2 += square[i * size + (size - i - 1)];
-    }
-    error += std::abs(magicConstant - diagSum1);
-    error += std::abs(magicConstant - diagSum2);
-
-    return error;
 }
 
 void EvolutionaryAlgorithm::solve() {
