@@ -24,7 +24,7 @@ private:
     double cross_rate;
     double mut_rate;
     std::vector<std::vector<int>> population; // Population of solutions
-    std::uniform_real_distribution<double> disCross; 
+    std::uniform_real_distribution<double> disCross; // Cross register
 
     void initializePopulation();
     std::vector<int> generateIndividual();
@@ -32,8 +32,9 @@ private:
     std::vector<int> selection(std::vector<int>fitnessP);
     std::vector<int> tournamentSelection(std::vector<int>fitnessValues,int tournamentSize);
     std::vector<int> crossoverOX(std::vector<int>& parent1, std::vector<int>& parent2);
-    std::vector<std::vector<int>> crossoverPMX(std::vector<int>& parent1, std::vector<int>& parent2);
-    std::vector<int> mutationIn(std::vector<int> individual);
+    
+    std::vector<std::vector<int>> crossoverPMX(const std::vector<int>& parent1,const  std::vector<int>& parent2);
+    std::vector<int> mutationIn(std::vector<int>& individual);
     std::vector<int> mutationDes(std::vector<int> individual);
     std::vector<std::vector<int>> elitism(std::vector<std::vector<int>> population);
     bool isMagicSquare(const std::vector<int>& square);
