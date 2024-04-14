@@ -3,6 +3,7 @@
 #define EVOLUTIONARY_ALGORITHM_H
 
 #include <vector>
+#include <random>
 struct IndividualWithFitness {
     std::vector<int> individual;
     double fitness;
@@ -23,6 +24,7 @@ private:
     double cross_rate;
     double mut_rate;
     std::vector<std::vector<int>> population; // Population of solutions
+    std::uniform_real_distribution<double> disCross; 
 
     void initializePopulation();
     std::vector<int> generateIndividual();

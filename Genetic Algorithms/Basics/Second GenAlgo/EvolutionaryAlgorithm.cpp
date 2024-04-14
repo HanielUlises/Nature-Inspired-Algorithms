@@ -276,24 +276,15 @@ std::vector<std::vector<int>> EvolutionaryAlgorithm::crossoverPMX(std::vector<in
 }
 
 std::vector<int> EvolutionaryAlgorithm::mutationIn(std::vector<int> individual) {
-    int sizeChild = individual.size();
-    std::uniform_real_distribution<double> dis3(0.0, 1.0);
-    std::uniform_real_distribution<double> dis(1, sizeChild);
-    std::uniform_real_distribution<double> dis2(1, sizeChild-1);
-    int num_mutation = dis(gen);
-    int i,j;
-    for(size_t k=0; k<num_mutation; k++){
-        if(dis3(gen)<mut_rate){
-            i = dis2(gen);
-            j = dis2(gen);
-            int aux = individual[i];
-            individual[i] = individual[j]; 
-            individual[j] = aux;
-        }
-        
+    double mutationChance = std::uniform_real_distribution<double>(0.0, 1.0)(gen);
+    if (mutationChance < mut_rate) {
+        int i = std::uniform_int_distribution<int>(0, individual.size() - 1)(gen);
+        int j = std::uniform_int_distribution<int>(0, individual.size() - 1)(gen);
+        std::swap(individual[i], individual[j]);
     }
     return individual;
 }
+
 
 std::vector<int> EvolutionaryAlgorithm::mutationDes(std::vector<int> individual) {
 
@@ -373,96 +364,60 @@ bool EvolutionaryAlgorithm::isMagicSquare(const std::vector<int>& square) {
 }
 
 void EvolutionaryAlgorithm::solve() {
-    // create population
-    
-    std::uniform_real_distribution<double> disCross(0.0, 1.0);
+    initializePopulation();
+
     std::vector<double> averageFitnessHistory;
     std::vector<double> bestFitnessHistory;
     std::vector<double> worstFitnessHistory;
-    initializePopulation();
     
     for (int gener = 0; gener < generations; ++gener) {
-        double averageFitness;
-        double bestFitness;
-        double worstFitness;
-        // Selection
         std::vector<int> fitnessP;
         for(const auto& individual : population){
-            int fitness = calculateFitness (individual);
+            int fitness = calculateFitness(individual);
             fitnessP.push_back(fitness);
         }
-        //tournament selection
+        
         int tournamentSize = 2;
-        auto selectedParents = tournamentSelection(fitnessP,2);
+        auto selectedParents = tournamentSelection(fitnessP, tournamentSize);
 
-        //stochastic selection
-        //auto selectedParents = selection(fitnessP);
-
-        // Crossover and Mutation
         std::vector<std::vector<int>> children;
         for (int i = 0; i < populationSize; i += 2) {
-            std::vector<int> child1;
-            std::vector<int> child2;
-            std::vector<std::vector<int>> childrenaux;
-
-            if(disCross(gen)<cross_rate){
-                childrenaux=crossoverPMX(population[selectedParents[i]], population[selectedParents[i+1]]);
-                child1=childrenaux[0];
-                child1=mutationIn(child1);
-                children.push_back(child1);
-                child1.clear();
-                child2=childrenaux[1];
-                child2=mutationIn(child2);
-                children.push_back(child2);
-                child2.clear();
-                childrenaux.clear();
-                /*
-                child1=crossoverOX(population[selectedParents[i]], population[selectedParents[i+1]]);
-                child1=mutationIn(child1);//child1=mutationDes(child1);
-                children.push_back(child1);
-                child1.clear();
-                child2=crossoverOX(population[selectedParents[i+1]], population[selectedParents[i]]);
-                child2=mutationIn(child2);//child1=mutationDes(child1);
-                children.push_back(child2);
-                child2.clear();
-                */
+            if (i+1 < selectedParents.size() && disCross(gen) < cross_rate) { // Asegúrate de tener una pareja para el cruce
+                auto childrenaux = crossoverPMX(population[selectedParents[i]], population[selectedParents[i+1]]);
+                for (auto& child : childrenaux) {
+                    child = mutationIn(child);
+                    children.push_back(child);
+                }
             }
-
         }
-        for(auto child:children){
+
+        for(auto& child : children){
             population.push_back(child);
         }
         
-        population=elitism(population);
+        population = elitism(population);
 
-        for(const auto& individual : population){
-            int fitness = calculateFitness (individual);
-            fitnessP.push_back(fitness);
-        }
-        averageFitness = accumulate(fitnessP.begin(), fitnessP.end(), 0.0) / fitnessP.size();
-        bestFitness = *std::min_element(fitnessP.begin(), fitnessP.end());
-        worstFitness = *std::max_element(fitnessP.begin(), fitnessP.end());
+        // Calcular estadísticas de la generación
+        double averageFitness = std::accumulate(fitnessP.begin(), fitnessP.end(), 0.0) / fitnessP.size();
+        double bestFitness = *std::min_element(fitnessP.begin(), fitnessP.end());
+        double worstFitness = *std::max_element(fitnessP.begin(), fitnessP.end());
 
         averageFitnessHistory.push_back(averageFitness);
         bestFitnessHistory.push_back(bestFitness);
         worstFitnessHistory.push_back(worstFitness);
 
-        // Find and print solution if one exists in the current generation
         for (const auto& individual : population) {
             if (isMagicSquare(individual)) {
                 std::cout << "Magic square found in generation " << gener << ":\n";
                 printSolution(individual);
-                plotConvergenceGraph(averageFitnessHistory,bestFitnessHistory,worstFitnessHistory);
+                plotConvergenceGraph(averageFitnessHistory, bestFitnessHistory, worstFitnessHistory);
                 return;
             }
         }
-        std::cout<<"Promedio: "<<averageFitness<<"  |  Mejor: "<<bestFitness;
-        std::cout<<"  |  Peor:"<<worstFitness<<std::endl;
-        
     }
+    
     std::cout << "Solution not found in " << generations << " generations.\n";
-    std::cout << "Best: " << bestFitnessHistory[bestFitnessHistory.size()-1] << std::endl;
-    plotConvergenceGraph(averageFitnessHistory,bestFitnessHistory,worstFitnessHistory);
+    plotConvergenceGraph(averageFitnessHistory, bestFitnessHistory, worstFitnessHistory);
 }
 
 void EvolutionaryAlgorithm::printSolution(const std::vector<int>& solution) {
