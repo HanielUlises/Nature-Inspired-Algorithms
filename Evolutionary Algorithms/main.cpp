@@ -7,7 +7,7 @@
 
 int main() {
     // Constants for selection and recombination strategies
-    const int rand = 0; // Placeholder for "random" strategy (not used here)
+    const int rand = 0;
     const int best = 1; // "best" strategy for mutation
     const int bin = 0;  // "binomial" crossover
     const int expo = 1; // "exponential" crossover
