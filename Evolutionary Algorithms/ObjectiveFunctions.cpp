@@ -21,3 +21,28 @@ double ackleyFunction(const std::vector<double>& individual) {
     double ackley = -20 * std::exp(-0.2 * std::sqrt(sum1 /  individual.size())) - std::exp(sum2 / individual.size()) + 20 + M_E;
     return ackley;
 }
+double GriewankFunction(const std::vector<double>& individual){
+    double propor=1.0/4000.0;
+    double sum = 0.0;
+    double mult = 0.0;
+    int i=1;
+    for (size_t i = 0; i < individual.size(); i++)
+    {
+        auto x_i=individual[i];
+        sum += std::pow(x_i, 2);
+        mult *= std::cos(x_i / sqrt(i+1));
+    }
+    
+    double griewank = (propor*sum)-(mult)+1;
+
+    return griewank;
+
+}
+double RastriginFunction(const std::vector<double>& individual){
+    double sum = 0.0;
+    for (auto x_i : individual) {
+        sum += (std::pow(x_i, 2))-(10*(std::cos(2*M_PI*x_i)));
+    }
+    double rastrigin = sum+(10*individual.size());
+    return rastrigin;
+}

@@ -13,7 +13,7 @@ class DifferentialEvolution {
 public:
     DifferentialEvolution(int population_size, int dimension, int generation_max, double lower_bound, double upper_bound, 
     double F, double Cr);
-    void runEvolution(const int select, const int recombi);
+    double runEvolution(const int select, const int recombi);
     void initializePopulation();
     std::vector<int> selection_r();
 

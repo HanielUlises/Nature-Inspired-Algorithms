@@ -6,3 +6,5 @@
 
 double rosenbrockFunction(const std::vector<double>& individual);
 double ackleyFunction(const std::vector<double>& individual);
+double GriewankFunction(const std::vector<double>& individual);
+double RastriginFunction(const std::vector<double>& individual);
