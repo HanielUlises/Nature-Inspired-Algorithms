@@ -9,12 +9,12 @@
 class EvolutionaryStrategy {
 public:
     EvolutionaryStrategy(int mu, int lambda, std::function<double(const std::vector<double>&)> objFunc, bool plusStrategy = false);
-    void runEvolution();
+    double runEvolution(); 
 
 private:
     int mu_;
     int lambda_;
-    bool plusStrategy_;
+    bool plusStrategy_; // Whether to use the μ+λ strategy
     std::vector<std::vector<double>> population_;
     std::default_random_engine generator_;
     std::normal_distribution<double> distribution_;
