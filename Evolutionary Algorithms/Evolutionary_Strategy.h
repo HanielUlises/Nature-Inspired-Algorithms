@@ -8,13 +8,16 @@
 
 class EvolutionaryStrategy {
 public:
-    EvolutionaryStrategy(int mu, int lambda, std::function<double(const std::vector<double>&)> objFunc, bool plusStrategy = false);
-    double runEvolution(); 
+    EvolutionaryStrategy(int population_size, int dimension, int generation_max, double lower_bound, double upper_bound, std::function<double(const std::vector<double>&)> objFunc, bool plusStrategy = false);
+    double runEvolution();
 
 private:
-    int mu_;
-    int lambda_;
-    bool plusStrategy_; // Whether to use the μ+λ strategy
+    int population_size_;
+    int dimension_;
+    int generation_max_;
+    double lower_bound_;
+    double upper_bound_;
+    bool plusStrategy_;  // Whether to use the μ+λ strategy
     std::vector<std::vector<double>> population_;
     std::default_random_engine generator_;
     std::normal_distribution<double> distribution_;

@@ -6,7 +6,13 @@
 #include <iostream>
 
 int main() {
-    // Parameters for Differential Evolution
+    // Constants for selection and recombination strategies
+    const int rand = 0; // Placeholder for "random" strategy (not used here)
+    const int best = 1; // "best" strategy for mutation
+    const int bin = 0;  // "binomial" crossover
+    const int expo = 1; // "exponential" crossover
+
+    // Parameters 
     int population_size = 50;
     int dimension = 10;
     int generation_max = 1000;
@@ -15,10 +21,6 @@ int main() {
     double F = 0.6;
     double Cr = 0.9;
 
-    // Parameters for Evolutionary Strategy
-    int mu = 20;
-    int lambda = 30;
-
     // Set of objective functions
     std::vector<std::function<double(const std::vector<double>&)>> objectiveFunctions = {
         rosenbrockFunction, ackleyFunction, GriewankFunction, RastriginFunction
@@ -26,11 +28,9 @@ int main() {
     std::vector<std::string> functionNames = {"Rosenbrock", "Ackley", "Griewank", "Rastrigin"};
 
     // Differential Evolution Tests
-    // ----------------------------
     std::cout << "Differential Evolution Tests" << std::endl;
-    std::vector<double> deBestHistory;
     for (size_t funcIndex = 0; funcIndex < objectiveFunctions.size(); ++funcIndex) {
-        deBestHistory.clear();
+        std::vector<double> deBestHistory;
         std::cout << "Testing " << functionNames[funcIndex] << " Function" << std::endl;
 
         for (size_t i = 0; i < 20; i++) {
@@ -49,9 +49,8 @@ int main() {
     }
 
     // Evolutionary Strategy Tests
-    // ---------------------------
     std::cout << "\nEvolutionary Strategy Tests" << std::endl;
-    for (bool plusStrategy : {false, true}) {
+    for (bool plusStrategy : {true, false}) { // Test both strategies μ+λ and μ,λ
         std::cout << "Testing with strategy: " << (plusStrategy ? "μ+λ" : "μ,λ") << std::endl;
 
         for (size_t funcIndex = 0; funcIndex < objectiveFunctions.size(); ++funcIndex) {
@@ -59,9 +58,8 @@ int main() {
             std::cout << "Using " << functionNames[funcIndex] << " function." << std::endl;
 
             for (size_t i = 0; i < 20; i++) {
-                EvolutionaryStrategy es(mu, lambda, objectiveFunctions[funcIndex], plusStrategy);
-                es.runEvolution();
-                double bestR = es.getBestFitness();  // Assume getBestFitness() returns the best fitness from the last generation
+                EvolutionaryStrategy es(population_size, dimension, generation_max, lower_bound, upper_bound, objectiveFunctions[funcIndex], plusStrategy);
+                double bestR = es.runEvolution();
                 esBestHistory.push_back(bestR);
             }
 
