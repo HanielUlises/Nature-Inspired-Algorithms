@@ -7,9 +7,6 @@
 int main() {
     int mu = 20;
     int lambda = 30;
-    
-    EvolutionaryStrategy es(mu, lambda);
-    es.runEvolution();
 
     int population_size = 50;
     int dimension = 10;
