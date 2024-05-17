@@ -36,14 +36,16 @@ void Particle::updatePosition() {
     }
 }
 
-PSO::PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function)
+PSO::PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function, int max_iterations)
   : global_best_score(std::numeric_limits<double>::infinity()),
     objective_function(obj_function) { 
     particles = std::vector<Particle>(swarm_size, Particle(dimensions));
     global_best_position.resize(dimensions);
+    history_global_best_score.resize(max_iterations);
 }
 
 void PSO::optimize(int max_iterations, double omega, double phi_p, double phi_g) {
+    
     for (int iter = 0; iter < max_iterations; ++iter) {
         for (auto& p : particles) {
             p.updateVelocity(global_best_position, omega, phi_p, phi_g);
@@ -58,7 +60,9 @@ void PSO::optimize(int max_iterations, double omega, double phi_p, double phi_g)
                 global_best_position = p.best_position;
             }
         }
+        history_global_best_score.push_back(global_best_score);
     }
+    
 }
 
 void PSO::printResults() const {

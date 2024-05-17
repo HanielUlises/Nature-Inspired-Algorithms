@@ -25,7 +25,6 @@ double GriewankFunction(const std::vector<double>& individual){
     double propor=1.0/4000.0;
     double sum = 0.0;
     double mult = 0.0;
-    int i=1;
     for (size_t i = 0; i < individual.size(); i++)
     {
         auto x_i=individual[i];
