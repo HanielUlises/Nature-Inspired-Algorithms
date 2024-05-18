@@ -16,7 +16,7 @@ int main() {
     std::vector<std::string> functionNames = {"Rosenbrock", "Ackley", "Griewank", "Rastrigin"};
 
     std::vector<std::vector<double>> history_ejecutions; 
-    /*
+    
     for (size_t i = 0; i < objectiveFunctions.size(); ++i) {
         std::cout << "Optimizing with " << functionNames[i] << " function...\n";
         for (size_t j = 0; j < 20; j++){
@@ -31,7 +31,7 @@ int main() {
         plotting(history_ejecutions);
         
     }
-    */
+    
     dimensions = 2;  // Número de dimensiones
     swarm_size = 100;  // Número de partículas
     max_iterations = 100;
