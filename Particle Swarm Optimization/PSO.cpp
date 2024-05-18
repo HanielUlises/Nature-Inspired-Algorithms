@@ -1,4 +1,5 @@
 #include "PSO.h"
+#include "LinealRegression.h"
 #include <cmath>
 #include <limits>
 #include <random>
@@ -72,3 +73,34 @@ void PSO::printResults() const {
     }
     std::cout << "\nBest score: " << global_best_score << std::endl;
 }
+
+PSO::PSO(int swarm_size, int dimensions)
+  : global_best_score(std::numeric_limits<double>::infinity()){ 
+    particles = std::vector<Particle>(swarm_size, Particle(dimensions));
+    global_best_position.resize(dimensions);
+}
+
+void PSO::minimizeError(int max_iterations, double omega, double phi_p, double phi_g) {
+    std::vector<std::vector<double>> DataSet = readCSV();
+    plottingSLR(DataSet);
+    
+    for (int iter = 0; iter < max_iterations; ++iter) {
+        for (auto& p : particles) {
+            p.updateVelocity(global_best_position, omega, phi_p, phi_g);
+            p.updatePosition();
+            double score = evaluation(p.position,DataSet);
+            if (score < p.best_score) {
+                p.best_score = score;
+                p.best_position = p.position;
+            }
+            if (score < global_best_score) {
+                global_best_score = score;
+                global_best_position = p.best_position;
+            }
+        }
+    }
+    plottingSLR_withSolution(DataSet, global_best_position);
+    
+
+}
+

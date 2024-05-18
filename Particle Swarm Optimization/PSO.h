@@ -25,7 +25,9 @@ public:
     std::function<double(const std::vector<double>&)> objective_function;  // Objective function stored as a member
 
     PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function,int max_iterations);
+    PSO(int swarm_size, int dimensions);
     void optimize(int max_iterations, double omega, double phi_p, double phi_g);
+    void minimizeError(int max_iterations, double omega, double phi_p, double phi_g);
     void printResults() const;
 };
 

@@ -22,17 +22,15 @@ double ackleyFunction(const std::vector<double>& individual) {
     return ackley;
 }
 double GriewankFunction(const std::vector<double>& individual){
-    double propor=1.0/4000.0;
-    double sum = 0.0;
-    double mult = 0.0;
-    for (size_t i = 0; i < individual.size(); i++)
-    {
+    double sum = 0.0f;
+    double mult = 0.0f;
+    for (size_t i = 0; i < individual.size(); i++){
         auto x_i=individual[i];
-        sum += std::pow(x_i, 2);
+        sum += std::pow(x_i, 2)/4000.0f;
         mult *= std::cos(x_i / sqrt(i+1));
     }
     
-    double griewank = (propor*sum)-(mult)+1;
+    double griewank = (sum)-(mult)+1;
 
     return griewank;
 
