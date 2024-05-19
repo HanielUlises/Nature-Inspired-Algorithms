@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "LinealRegression.h"
+#include "LinearRegression.h"
 #include "matplotlibcpp.h"
 
 namespace plt = matplotlibcpp;
@@ -80,19 +80,27 @@ void plottingSLR(std::vector<std::vector<double>> DataSet){
     
 }
 
-void plotting(std::vector<std::vector<double>> history){
-    std::vector<double> bestscore=history[0];
-    std::vector<double> worstscore=history[0];
-    for (const auto &score : history){
-        if (score[score.size()-1]<=bestscore[bestscore.size()-1]) bestscore=score;
+void plotting(const std::vector<std::vector<double>>& history) {
+    if (history.empty()) {
+        std::cerr << "Error: History is empty. No data to plot.\n";
+        return;
     }
-    for (const auto &score : history){
-        if (score[score.size()-1]>=worstscore[worstscore.size()-1]) worstscore=score;
-    }
-    std::string title = "Convergence Graph ";
-    //title.append(function);
 
-    std::vector<int> generations(bestscore.size());
+    size_t history_size = history[0].size();
+    std::vector<double> bestscore = history[0];
+    std::vector<double> worstscore = history[0];
+    for (const auto &score : history) {
+        if (score.size() != history_size) {
+            std::cerr << "Error: Inconsistent sizes in history data.\n";
+            return;
+        }
+        if (score.back() <= bestscore.back()) bestscore = score;
+        if (score.back() >= worstscore.back()) worstscore = score;
+    }
+
+    std::string title = "Convergence Graph";
+
+    std::vector<int> generations(history_size);
     std::iota(generations.begin(), generations.end(), 0);
 
     plt::plot(generations, bestscore, {{"label", "best"}});
@@ -103,11 +111,9 @@ void plotting(std::vector<std::vector<double>> history){
     plt::legend();
 
     plt::title(title);
-
     plt::show();
-    
-    
 }
+
 
 void plottingSLR_withSolution(std::vector<std::vector<double>> DataSet, std::vector<double> particle){
     std::vector<double> X=DataSet[0];

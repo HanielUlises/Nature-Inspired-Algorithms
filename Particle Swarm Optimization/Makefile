@@ -1,33 +1,22 @@
-CXX = clang++
-CXXFLAGS = -std=c++20 -Wall -I"../Utils"
-LDFLAGS =
+CXX = g++
+CXXFLAGS = -std=c++20 -I/usr/include/python3.10 -I/home/haniel/Libraries -I/home/haniel/.local/lib/python3.10/site-packages/numpy/core/include -I../Utils
+LDFLAGS = -lpython3.10
 
-TARGET = PSO.exe
+TARGET = main
 
-SRC_DIR = .
-OBJ_DIR = obj
-UTILS_DIR = ../Utils
+SRC = main_pso.cpp PSO.cpp LinearRegression.cpp ../Utils/ObjectiveFunctions.cpp
 
-SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(UTILS_DIR)/*.cpp)
-OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp)) \
-       $(patsubst $(UTILS_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(UTILS_DIR)/*.cpp))
+OBJ = $(SRC:.cpp=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo "Compiling $<"
-	@if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(OBJ_DIR)/%.o: $(UTILS_DIR)/%.cpp
-	@echo "Compiling $<"
-	@if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
+%.o: %..cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	del /Q /F $(OBJ_DIR)\\* $(TARGET)
+	rm -f $(OBJ) $(TARGET)
 
 .PHONY: all clean
