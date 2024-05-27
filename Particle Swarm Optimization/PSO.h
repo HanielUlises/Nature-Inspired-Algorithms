@@ -11,7 +11,7 @@ public:
     std::vector<double> best_position;
     double best_score;
 
-    Particle(int dimensions);
+    Particle(int dimensions, int op);
     void updateVelocity(const std::vector<double>& global_best_position, double omega, double phi_p, double phi_g, double chi);
     void updatePosition();
     void reinitialize();
@@ -27,7 +27,7 @@ public:
     double omega;
     double threshold;
 
-    PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function, int max_iterations, double init_threshold);
+    PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function, int max_iterations, double init_threshold, int op);
     PSO(int swarm_size, int dimensions);
     void optimize(int max_iterations, double omega_start, double omega_end, double phi_p, double phi_g) ;
     void minimizeError(int max_iterations, double omega, double phi_p, double phi_g);

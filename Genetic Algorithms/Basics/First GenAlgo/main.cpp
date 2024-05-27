@@ -20,7 +20,7 @@ int main() {
     // option 1: Rosenbrock
     // option 2: Ackley
     
-    // newGen.binary_performance(1);
+    // newGen.binary_performance    (1);
     // newGen.real_performance(1);
     // newGen.binary_performance(2);
     newGen.real_performance(2);

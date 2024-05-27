@@ -8,14 +8,27 @@
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_real_distribution<> dis(0, 1);
+std::uniform_real_distribution<> disP1(-10, 10);
+std::uniform_real_distribution<> disP2(-32.768, 32.768);
+std::uniform_real_distribution<> disP3(-100, 100);
+std::uniform_real_distribution<> disP4(-5.12, 5.12);
+std::uniform_real_distribution<> disV(0, 10);
 
-Particle::Particle(int dimensions) : best_score(std::numeric_limits<double>::infinity()) {
+Particle::Particle(int dimensions, int op) : best_score(std::numeric_limits<double>::infinity()) {
     position.resize(dimensions);
     velocity.resize(dimensions);
     best_position.resize(dimensions);
     for (int i = 0; i < dimensions; ++i) {
-        position[i] = dis(gen) * 10 - 5;
-        velocity[i] = dis(gen) * 2 - 1;
+        if (op==0){
+            position[i] = disP1(gen);
+        }else if(op==1){
+            position[i] = disP2(gen);
+        }else if(op==2){
+            position[i] = disP3(gen);
+        }else if(op==3){
+            position[i] = disP4(gen);
+        }
+        velocity[i] = disV(gen);
     }
     best_position = position;
 }
@@ -44,9 +57,9 @@ void Particle::reinitialize() {
     best_score = std::numeric_limits<double>::infinity();
 }
 
-PSO::PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function, int max_iterations, double init_threshold)
+PSO::PSO(int swarm_size, int dimensions, std::function<double(const std::vector<double>&)> obj_function, int max_iterations, double init_threshold, int op)
   : global_best_score(std::numeric_limits<double>::infinity()), objective_function(obj_function), threshold(init_threshold) {
-    particles = std::vector<Particle>(swarm_size, Particle(dimensions));
+    particles = std::vector<Particle>(swarm_size, Particle(dimensions, op));
     global_best_position.resize(dimensions);
     history_global_best_score.resize(max_iterations, std::numeric_limits<double>::infinity()); // Ensure history is properly sized
 }
