@@ -1,0 +1,83 @@
+#include <iostream>
+#include "ACO.h"
+#include <vector>
+#include <random>
+#include <cmath>
+#include <numeric>
+
+std::random_device rd;
+std::mt19937 gen(rd());
+
+
+ACO::ACO(int num_ants, int max_iterations, std::vector<std::vector<int>> distance, double evaporation, int alpha, int beta, int q) 
+    : num_ants(num_ants), max_iterations(max_iterations), distance(distance), evaporation(evaporation), alpha(alpha), beta(beta), q(q) {
+    for(size_t i = 0; i < distance.size(); ++i){
+        std::vector<double> phe;
+        for(size_t j = 0; j < distance.size(); ++j){
+            double a = (double) 1 / distance.size();
+            phe.push_back(a);
+        }
+        pheromone.push_back(phe);
+    }
+}
+
+int ACO::selectNext_city(int actual, std::vector<int> not_busy){
+    std::vector<double> probabilities;
+    for (size_t i = 0; i < not_busy.size(); i++){
+        auto phe = std::pow(pheromone[actual][not_busy[i]], alpha);
+        double visibility = std::pow((1.0 / distance[actual][not_busy[i]]), beta);
+        double probability = phe * visibility;
+        probabilities.push_back(probability);
+
+    }
+    double sum_probabilities = accumulate(probabilities.begin(), probabilities.end(), 0.0);
+    for (size_t i = 0; i < not_busy.size(); i++){
+        probabilities[i]=probabilities[i]/sum_probabilities;
+    }
+    double max_probability = *std::max_element(probabilities.begin(), probabilities.end());
+    int index=0;
+    for(const auto& prob:probabilities){
+        if(prob==max_probability) return index;
+        else index++;
+    }
+    
+}
+
+std::vector<std::vector<int>> ACO::constructRoute(int num_city){
+    std::uniform_int_distribution<> dis(0, num_city-1);
+    std::vector<std::vector<int>> routes; 
+    for (size_t i = 0; i < num_ants; i++){
+        int init = dis(gen);
+        std::vector<int> route; 
+        std::vector<int> not_busy(num_city);
+        std::iota(not_busy.begin(), not_busy.end(), 0);
+        route.push_back(init);
+        auto ref = std::find(not_busy.begin(), not_busy.end(), init); 
+        not_busy.erase(ref);
+ 
+        int actual = init;
+        while (not_busy.size()!=0){
+            auto siguiente = selectNext_city(actual, not_busy);
+            route.push_back(siguiente);
+            auto ref = std::find(not_busy.begin(), not_busy.end(), siguiente); 
+            not_busy.erase(ref);
+            actual = siguiente;
+        }
+        routes.push_back(route);
+    }
+    return routes;
+}
+
+void ACO::optimize(){
+    std::vector<int> best_route;
+    std::vector<std::vector<int>> routes;
+    double best_distance;
+    int num_city=distance[0].size();
+
+    for (size_t i = 0; i < max_iterations; i++){
+
+        routes = constructRoute (num_city);
+    }
+    
+}
+
