@@ -147,3 +147,13 @@ void ACO::printSolution(std::vector<int> route){
     std::cout<<"evaluations result: "<<fit<<std::endl;
 
 }
+
+double ACO::evaluateSolution(const std::vector<int>& solution) {
+    double fitness = 0.0;
+    for (size_t i = 0; i < solution.size() - 1; ++i) {
+        int from = solution[i];
+        int to = solution[i + 1];
+        fitness += distance[from][to] * flows[from][to];
+    }
+    return fitness;
+}

@@ -24,6 +24,8 @@ public:
     void updatePheromone(std::vector<std::vector<int>> routes, std::vector<int> distances);
     std::vector<int> optimize();
     void printSolution(std::vector<int> route);
+    double evaluateSolution(const std::vector<int>& solution);
+
 };
 
 
