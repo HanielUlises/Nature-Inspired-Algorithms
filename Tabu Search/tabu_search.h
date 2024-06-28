@@ -2,11 +2,14 @@
 #define TABU_SEARCH_H
 
 #include <vector>
+#include <deque>
 #include <iostream>
 
 struct Object {
     int id;
     double weight;
+
+    bool operator==(const Object& other) const;
 };
 
 struct Container {
@@ -17,6 +20,8 @@ struct Container {
 
     Container(int id, double capacity);
     bool addObject(const Object& obj);
+
+    bool operator==(const Container& other) const; 
 };
 
 class TabuSearch {
@@ -32,7 +37,7 @@ private:
     int tabu_list_size;
     std::vector<Container> best_solution;
     std::vector<std::vector<Container>> solutions;
-    std::vector<std::vector<Container>> tabu_list;
+    std::deque<std::vector<Container>> tabu_list;
 
     void generateInitialSolution();
     void evaluateSolution(std::vector<Container>& solution);

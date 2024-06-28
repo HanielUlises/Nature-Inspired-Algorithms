@@ -4,7 +4,6 @@
 #include <limits>
 #include <cmath>
 
-// Constructor de Container
 Container::Container(int id, double capacity) : id(id), capacity(capacity), current_weight(0) {}
 
 bool Container::addObject(const Object& obj) {
@@ -16,18 +15,28 @@ bool Container::addObject(const Object& obj) {
     return false;
 }
 
-// Constructor de TabuSearch
+bool Object::operator==(const Object& other) const {
+    return id == other.id && weight == other.weight;
+}
+
+bool Container::operator==(const Container& other) const {
+    return id == other.id &&
+           capacity == other.capacity &&
+           current_weight == other.current_weight &&
+           objects == other.objects;
+}
+
 TabuSearch::TabuSearch(const std::vector<Object>& objects, double container_capacity, int max_iterations, int tabu_list_size)
     : objects(objects), container_capacity(container_capacity), max_iterations(max_iterations), tabu_list_size(tabu_list_size) {}
 
 void TabuSearch::solve() {
     generateInitialSolution();
-    best_solution = solutions[0];
+    best_solution = tabu_list.front();
 
     for (int iteration = 0; iteration < max_iterations; ++iteration) {
-        auto neighbour = getNeighbourSolution(solutions.back());
+        auto neighbour = getNeighbourSolution(tabu_list.back());
         if (!isTabu(neighbour)) {
-            solutions.push_back(neighbour);
+            tabu_list.push_back(neighbour);
             if (neighbour.size() < best_solution.size()) {
                 best_solution = neighbour;
             }
@@ -66,12 +75,7 @@ void TabuSearch::generateInitialSolution() {
             initial_solution.push_back(new_container);
         }
     }
-    solutions.push_back(initial_solution);
-}
-
-void TabuSearch::evaluateSolution(std::vector<Container>& solution) {
-    // TODO: implementation
-    // No-op for this implementation as we're primarily interested in the number of containers used
+    tabu_list.push_back(initial_solution);
 }
 
 std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Container>& current_solution) {
@@ -117,8 +121,8 @@ bool TabuSearch::isTabu(const std::vector<Container>& solution) {
 }
 
 void TabuSearch::updateTabuList(const std::vector<Container>& solution) {
-    tabu_list.push_back(solution);
-    if (tabu_list.size() > tabu_list_size) {
-        tabu_list.erase(tabu_list.begin());
+    if (tabu_list.size() >= static_cast<size_t>(tabu_list_size)) {
+        tabu_list.pop_front();
     }
+    tabu_list.push_back(solution);
 }
