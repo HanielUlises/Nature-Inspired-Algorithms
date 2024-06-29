@@ -3,6 +3,7 @@
 #include <random>
 #include <limits>
 #include <cmath>
+#include <unordered_set>
 
 Container::Container(int id, double capacity) : id(id), capacity(capacity), current_weight(0) {}
 
@@ -100,24 +101,20 @@ void TabuSearch::evaluateSolution(std::vector<Container>& solution) {
 
 std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Container>& current_solution) {
     std::vector<Container> neighbour = current_solution;
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
-    // Edge case where there's only one container
     if (neighbour.size() < 2) return neighbour;
 
-    // Select two random containers
     std::uniform_int_distribution<> dis(0, neighbour.size() - 1);
     int i = dis(gen);
     int j = dis(gen);
 
-    // These random containers must be different
     while (i == j) {
         j = dis(gen);
     }
 
     if (!neighbour[i].objects.empty()) {
-        // Move a random object from container i to container j
         std::uniform_int_distribution<> obj_dis(0, neighbour[i].objects.size() - 1);
         int obj_idx = obj_dis(gen);
         Object obj = neighbour[i].objects[obj_idx];
@@ -136,10 +133,10 @@ std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Contai
 }
 
 bool TabuSearch::isTabu(const std::vector<Container>& solution) {
-    for (const auto& tabu_solution : tabu_list) {
-        if (tabu_solution == solution) {
-            return true;
-        }
+    static std::unordered_set<size_t> tabu_set;
+    size_t solution_hash = hashSolution(solution);
+    if (tabu_set.find(solution_hash) != tabu_set.end()) {
+        return true;
     }
     return false;
 }
@@ -148,17 +145,18 @@ void TabuSearch::updateTabuList(const std::vector<Container>& solution) {
     if (tabu_list.size() >= static_cast<size_t>(tabu_list_size)) {
         tabu_list.pop_front();
     }
+    size_t solution_hash = hashSolution(solution);
     tabu_list.push_back(solution);
+    tabu_set.insert(solution_hash);
 }
 
 bool TabuSearch::aspirationCriterion(const std::vector<Container>& solution) {
-    // Allow moves that improve the best-known solution
     return solution.size() < best_solution.size();
 }
 
 void TabuSearch::diversify() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, objects.size() - 1);
 
     int random_obj_idx = dis(gen);
@@ -197,6 +195,16 @@ double TabuSearch::calculateSolutionCost(const std::vector<Container>& solution)
 
     weight_variance /= solution.size();
 
-    double penalty_factor = 1.0;  // Adjust this factor to balance container usage and weight balance
+    double penalty_factor = 1.0;
     return solution.size() + penalty_factor * weight_variance;
+}
+
+size_t TabuSearch::hashSolution(const std::vector<Container>& solution) const {
+    size_t hash_value = 0;
+    for (const auto& container : solution) {
+        for (const auto& obj : container.objects) {
+            hash_value ^= std::hash<int>()(obj.id) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
+        }
+    }
+    return hash_value;
 }

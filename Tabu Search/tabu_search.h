@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <deque>
+#include <unordered_set>
 #include <numeric>
 #include <iostream>
 
@@ -40,6 +41,7 @@ private:
     std::vector<Container> best_solution;
     std::vector<std::vector<Container>> solutions;
     std::deque<std::vector<Container>> tabu_list;
+    std::unordered_set<size_t> tabu_set;
     std::vector<std::pair<int, int>> object_move_history;
 
     void generateInitialSolution();
@@ -50,6 +52,7 @@ private:
     bool aspirationCriterion(const std::vector<Container>& solution);
     void diversify();
     double calculateSolutionCost(const std::vector<Container>& solution);
+    size_t hashSolution(const std::vector<Container>& solution) const;
 };
 
 #endif // TABU_SEARCH_H
