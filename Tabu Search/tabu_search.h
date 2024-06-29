@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <deque>
+#include <numeric>
 #include <iostream>
 
 struct Object {
@@ -20,8 +21,9 @@ struct Container {
 
     Container(int id, double capacity);
     bool addObject(const Object& obj);
+    bool removeObject(const Object& obj);
 
-    bool operator==(const Container& other) const; 
+    bool operator==(const Container& other) const;
 };
 
 class TabuSearch {
@@ -38,12 +40,16 @@ private:
     std::vector<Container> best_solution;
     std::vector<std::vector<Container>> solutions;
     std::deque<std::vector<Container>> tabu_list;
+    std::vector<std::pair<int, int>> object_move_history;
 
     void generateInitialSolution();
     void evaluateSolution(std::vector<Container>& solution);
     std::vector<Container> getNeighbourSolution(const std::vector<Container>& current_solution);
     bool isTabu(const std::vector<Container>& solution);
     void updateTabuList(const std::vector<Container>& solution);
+    bool aspirationCriterion(const std::vector<Container>& solution);
+    void diversify();
+    double calculateSolutionCost(const std::vector<Container>& solution);
 };
 
 #endif // TABU_SEARCH_H

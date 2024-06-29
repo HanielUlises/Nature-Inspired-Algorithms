@@ -15,6 +15,16 @@ bool Container::addObject(const Object& obj) {
     return false;
 }
 
+bool Container::removeObject(const Object& obj) {
+    auto it = std::find(objects.begin(), objects.end(), obj);
+    if (it != objects.end()) {
+        current_weight -= obj.weight;
+        objects.erase(it);
+        return true;
+    }
+    return false;
+}
+
 bool Object::operator==(const Object& other) const {
     return id == other.id && weight == other.weight;
 }
@@ -35,12 +45,17 @@ void TabuSearch::solve() {
 
     for (int iteration = 0; iteration < max_iterations; ++iteration) {
         auto neighbour = getNeighbourSolution(tabu_list.back());
-        if (!isTabu(neighbour)) {
+        if (!isTabu(neighbour) || aspirationCriterion(neighbour)) {
             tabu_list.push_back(neighbour);
+            evaluateSolution(neighbour);
             if (neighbour.size() < best_solution.size()) {
                 best_solution = neighbour;
             }
             updateTabuList(neighbour);
+        }
+
+        if (iteration % 10 == 0) { // Diversification every 10 iterations
+            diversify();
         }
     }
 }
@@ -78,17 +93,25 @@ void TabuSearch::generateInitialSolution() {
     tabu_list.push_back(initial_solution);
 }
 
+void TabuSearch::evaluateSolution(std::vector<Container>& solution) {
+    double solution_cost = calculateSolutionCost(solution);
+    std::cout << solution_cost << std::endl;
+}
+
 std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Container>& current_solution) {
     std::vector<Container> neighbour = current_solution;
     std::random_device rd;
     std::mt19937 gen(rd());
+
+    // Edge case where there's only one container
+    if (neighbour.size() < 2) return neighbour;
 
     // Select two random containers
     std::uniform_int_distribution<> dis(0, neighbour.size() - 1);
     int i = dis(gen);
     int j = dis(gen);
 
-    // Ensure they are different
+    // These random containers must be different
     while (i == j) {
         j = dis(gen);
     }
@@ -100,12 +123,13 @@ std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Contai
         Object obj = neighbour[i].objects[obj_idx];
 
         if (neighbour[j].addObject(obj)) {
-            neighbour[i].objects.erase(neighbour[i].objects.begin() + obj_idx);
-            neighbour[i].current_weight -= obj.weight;
+            neighbour[i].removeObject(obj);
 
             if (neighbour[i].objects.empty()) {
                 neighbour.erase(neighbour.begin() + i);
             }
+
+            object_move_history.push_back({obj.id, neighbour[j].id});
         }
     }
     return neighbour;
@@ -125,4 +149,54 @@ void TabuSearch::updateTabuList(const std::vector<Container>& solution) {
         tabu_list.pop_front();
     }
     tabu_list.push_back(solution);
+}
+
+bool TabuSearch::aspirationCriterion(const std::vector<Container>& solution) {
+    // Allow moves that improve the best-known solution
+    return solution.size() < best_solution.size();
+}
+
+void TabuSearch::diversify() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, objects.size() - 1);
+
+    int random_obj_idx = dis(gen);
+    Object random_obj = objects[random_obj_idx];
+
+    std::vector<Container> diversified_solution = best_solution;
+    for (auto& container : diversified_solution) {
+        container.removeObject(random_obj);
+    }
+
+    bool placed = false;
+    for (auto& container : diversified_solution) {
+        if (container.addObject(random_obj)) {
+            placed = true;
+            break;
+        }
+    }
+
+    if (!placed) {
+        Container new_container(diversified_solution.size() + 1, container_capacity);
+        new_container.addObject(random_obj);
+        diversified_solution.push_back(new_container);
+    }
+
+    tabu_list.push_back(diversified_solution);
+}
+
+double TabuSearch::calculateSolutionCost(const std::vector<Container>& solution) {
+    double weight_variance = 0.0;
+    double mean_weight = std::accumulate(solution.begin(), solution.end(), 0.0,
+                                         [](double sum, const Container& container) { return sum + container.current_weight; }) / solution.size();
+
+    for (const auto& container : solution) {
+        weight_variance += std::pow(container.current_weight - mean_weight, 2);
+    }
+
+    weight_variance /= solution.size();
+
+    double penalty_factor = 1.0;  // Adjust this factor to balance container usage and weight balance
+    return solution.size() + penalty_factor * weight_variance;
 }
