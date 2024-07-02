@@ -1,0 +1,14 @@
+Best solution found:
+Container 1 (current weight: 96.5): Object 1 (weight: 20.5) Object 2 (weight: 35.7) Object 3 (weight: 12.3) Object 4 (weight: 17.8) Object 7 (weight: 10.2) 
+Container 2 (current weight: 99.2): Object 5 (weight: 33.1) Object 6 (weight: 29.4) Object 9 (weight: 25.6) Object 21 (weight: 11.1) 
+Container 3 (current weight: 99.3): Object 8 (weight: 40) Object 10 (weight: 18.4) Object 11 (weight: 19.9) Object 14 (weight: 21) 
+Container 4 (current weight: 97.8): Object 12 (weight: 50.1) Object 13 (weight: 22.7) Object 17 (weight: 15.6) Object 31 (weight: 9.4) 
+Container 5 (current weight: 96.3): Object 15 (weight: 45.3) Object 16 (weight: 27.8) Object 19 (weight: 23.2) 
+Container 6 (current weight: 90.7): Object 18 (weight: 34.4) Object 20 (weight: 39.8) Object 24 (weight: 16.5) 
+Container 7 (current weight: 90.5): Object 22 (weight: 30.3) Object 23 (weight: 28) Object 25 (weight: 32.2) 
+Container 8 (current weight: 98.3): Object 26 (weight: 38.9) Object 27 (weight: 14.6) Object 28 (weight: 13.5) Object 32 (weight: 31.3) 
+Container 9 (current weight: 99.1): Object 29 (weight: 36.5) Object 30 (weight: 37.7) Object 33 (weight: 24.9) 
+Container 10 (current weight: 90.2): Object 34 (weight: 49) Object 35 (weight: 41.2) 
+Container 11 (current weight: 90.9): Object 36 (weight: 48.6) Object 37 (weight: 42.3) 
+Container 12 (current weight: 87.8): Object 38 (weight: 43.7) Object 39 (weight: 44.1) 
+Total containers used: 12

@@ -4,6 +4,7 @@
 #include <limits>
 #include <cmath>
 #include <unordered_set>
+#include <fstream>
 
 Container::Container(int id, double capacity) : id(id), capacity(capacity), current_weight(0) {}
 
@@ -43,14 +44,18 @@ TabuSearch::TabuSearch(const std::vector<Object>& objects, double container_capa
 void TabuSearch::solve() {
     generateInitialSolution();
     best_solution = tabu_list.front();
-
+    best_evaluation = evaluateSolution(best_solution);
     for (int iteration = 0; iteration < max_iterations; ++iteration) {
         auto neighbour = getNeighbourSolution(tabu_list.back());
+        double evaluation = evaluateSolution(neighbour);
+        evaluation_history.push_back(evaluation);
         if (!isTabu(neighbour) || aspirationCriterion(neighbour)) {
             tabu_list.push_back(neighbour);
-            evaluateSolution(neighbour);
-            if (neighbour.size() < best_solution.size()) {
+            if (neighbour.size() < best_solution.size() && evaluation < best_evaluation) {
                 best_solution = neighbour;
+                best_evaluation = evaluateSolution(best_solution);
+            }else if(neighbour!=best_solution){
+                solutions.push_back(neighbour);
             }
             updateTabuList(neighbour);
         }
@@ -62,15 +67,40 @@ void TabuSearch::solve() {
 }
 
 void TabuSearch::printSolution() {
+    std::ofstream archivo("Best solution.txt");
     std::cout << "Best solution found:\n";
+    archivo << "Best solution found:\n";
     for (const auto& container : best_solution) {
         std::cout << "Container " << container.id << " (current weight: " << container.current_weight << "): ";
+        archivo << "Container " << container.id << " (current weight: " << container.current_weight << "): ";
         for (const auto& obj : container.objects) {
             std::cout << "Object " << obj.id << " (weight: " << obj.weight << ") ";
+            archivo << "Object " << obj.id << " (weight: " << obj.weight << ") ";
         }
         std::cout << std::endl;
+        archivo << "\n";
     }
     std::cout << "Total containers used: " << best_solution.size() << std::endl;
+    archivo << "Total containers used: " << best_solution.size() << std::endl;
+    archivo.close();
+
+    //Others
+
+    std::ofstream archivo2("Others solutions founded.txt");
+    archivo2 << "Other solution found:\n";
+    for (const auto& sol:solutions){    
+        for (const auto& container : sol) {
+            archivo2 << "Container " << container.id << " (current weight: " << container.current_weight << "): ";
+            for (const auto& obj : container.objects) {
+                archivo2 << "Object " << obj.id << " (weight: " << obj.weight << ") ";
+            }
+            archivo2 << "\n";
+        }
+        archivo2 << "Total containers used: " << best_solution.size() << std::endl;
+    }
+    archivo2.close();
+
+
 }
 
 void TabuSearch::generateInitialSolution() {
@@ -94,9 +124,10 @@ void TabuSearch::generateInitialSolution() {
     tabu_list.push_back(initial_solution);
 }
 
-void TabuSearch::evaluateSolution(std::vector<Container>& solution) {
+double TabuSearch::evaluateSolution(std::vector<Container>& solution) {
     double solution_cost = calculateSolutionCost(solution);
     std::cout << solution_cost << std::endl;
+    return solution_cost;
 }
 
 std::vector<Container> TabuSearch::getNeighbourSolution(const std::vector<Container>& current_solution) {
@@ -187,7 +218,7 @@ void TabuSearch::diversify() {
 double TabuSearch::calculateSolutionCost(const std::vector<Container>& solution) {
     double weight_variance = 0.0;
     double mean_weight = std::accumulate(solution.begin(), solution.end(), 0.0,
-                                         [](double sum, const Container& container) { return sum + container.current_weight; }) / solution.size();
+                        [](double sum, const Container& container) { return sum + container.current_weight; }) / solution.size();
 
     for (const auto& container : solution) {
         weight_variance += std::pow(container.current_weight - mean_weight, 2);

@@ -36,6 +36,7 @@ int main() {
     TabuSearch tabu_search(objects, container_capacity, max_iterations, tabu_list_size);
     tabu_search.solve();
     tabu_search.printSolution();
+    tabu_search.plotConvergenceGraph();
 
     return 0;
 }

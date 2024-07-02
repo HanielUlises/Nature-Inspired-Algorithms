@@ -32,20 +32,23 @@ public:
     TabuSearch(const std::vector<Object>& objects, double container_capacity, int max_iterations, int tabu_list_size);
     void solve();
     void printSolution();
+    void plotConvergenceGraph();
 
 private:
     std::vector<Object> objects;
     double container_capacity;
     int max_iterations;
     int tabu_list_size;
+    double best_evaluation;
     std::vector<Container> best_solution;
     std::vector<std::vector<Container>> solutions;
     std::deque<std::vector<Container>> tabu_list;
     std::unordered_set<size_t> tabu_set;
     std::vector<std::pair<int, int>> object_move_history;
+    std::vector<double> evaluation_history;
 
     void generateInitialSolution();
-    void evaluateSolution(std::vector<Container>& solution);
+    double evaluateSolution(std::vector<Container>& solution);
     std::vector<Container> getNeighbourSolution(const std::vector<Container>& current_solution);
     bool isTabu(const std::vector<Container>& solution);
     void updateTabuList(const std::vector<Container>& solution);
@@ -53,6 +56,9 @@ private:
     void diversify();
     double calculateSolutionCost(const std::vector<Container>& solution);
     size_t hashSolution(const std::vector<Container>& solution) const;
+    
 };
 
 #endif // TABU_SEARCH_H
+
+

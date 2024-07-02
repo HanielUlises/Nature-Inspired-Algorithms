@@ -1,7 +1,7 @@
-CXX = clang++
+CXX = c++
 CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -g
 
-TARGET = tabu_search.exe
+TARGET = main.exe
 SOURCES = main.cpp tabu_search.cpp
 
 $(TARGET): $(SOURCES)
