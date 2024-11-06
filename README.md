@@ -21,6 +21,3 @@ An iterative local search algorithm that avoids cycling back to previously visit
 
 ### Utils
 Here are utility functions, helper scripts, and shared code used across multiple algorithm implementations.
-
-## Repository Contents
-
