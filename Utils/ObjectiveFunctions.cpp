@@ -44,25 +44,23 @@ double RastriginFunction(const std::vector<double>& individual){
     return rastrigin;
 }
 
-double Langermann(const std::vector<double> & individual){
-    double sum = 0.0f;
 
+double Langermann(const std::vector<double> &individual) {
     std::vector<double> a = {3.0, 5.0, 2.0, 1.0, 7.0};
     std::vector<double> b = {5.0, 2.0, 1.0, 4.0, 9.0};
     std::vector<double> c = {1.0, 2.0, 5.0, 2.0, 3.0};
 
-    int size_vec = a.c;
+    int size_vec = a.size();
+    double sum = 0.0;
 
-    std::pair<double, double> low_bound = {0.0, 0.0};
-    std::pair<double, double> up_bound = {10.0, 10.0};
-
-    double sum = 0.0f;
-
-    for(int i = 0; i < size_vec; i++){
-        for(auto x_i : individual){
-            sum += c[i] * std::cos(M_PI*(std::pow((x_i-a[i]),2))+ std::pow((x_i - b[i]),2))
-                        / std::exp(std::pow(x_i - a[i], 2) + std::pow(x_i - a[i], 2)/ M_PI);
-        }
+    for (int i = 0; i < size_vec; i++) {
+        double term = std::pow(individual[0] - a[i], 2) + std::pow(individual[1] - b[i], 2);
+        sum += c[i] * std::cos(M_PI * term) / std::exp(term / M_PI);
     }
-    return individual;
+    return -sum; 
+}
+
+double dropWave(const std::vector<double> &individual){
+    return - 1 + std::cos(12*std::sqrt(std::pow(individual[0],2) + std::pow(individual[1],2))/
+            (0.5)* (std::pow(individual[0],2) + std::pow(individual[1],2)) + 2);
 }

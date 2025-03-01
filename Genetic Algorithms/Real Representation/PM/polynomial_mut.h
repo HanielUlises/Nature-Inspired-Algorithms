@@ -1,7 +1,10 @@
-#include <bits/stdc++.h>
+#ifndef POLYNOMIAL_MUT
+#define POLYNOMIAL_MUT
 
-using std::vector;
-using std::pair;
-using std::cout;
+#include <vector>
+#include <utility>
+#include <cmath>
 
-vector<double> polynomial_mutation(vector<double>& x, double r, int nm) 
+std::vector<double> polynomial_mutation(std::vector<double>& x, double r, int nm);
+
+#endif // POLYNOMIAL_MUT

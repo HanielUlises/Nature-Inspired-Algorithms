@@ -1,16 +1,11 @@
 #include "polynomial_mut.h"
 
-vector<double> polynomial_mutation(vector<double>& x, double r, int nm) {
-    // std::random_device rd;
-    // std::mt19937 gen(rd());
-    // std::uniform_real_distribution<> dis(0.0, 1.0);
+std::vector<double> polynomial_mutation(std::vector<double>& x, double r, int nm) {
+    std::vector<double> mutated_x(x.size());
 
-    vector<double> mutated_x(x.size());
-    
-    
     for (int i = 0; i < x.size(); i++) {
-        double upper_bound = x[i] > 0 ? floor(x[i]) : ceil(x[i]);
-        double lower_bound = x[i] < 0 ? floor(x[i]) : ceil(x[i]);
+        double upper_bound = x[i] > 0 ? std::floor(x[i]) : std::ceil(x[i]);
+        double lower_bound = x[i] < 0 ? std::floor(x[i]) : std::ceil(x[i]);
 
         double delta = std::min(upper_bound - x[i], x[i] - lower_bound) / (upper_bound - lower_bound);
         double deltaq = 0.0;
@@ -23,22 +18,22 @@ vector<double> polynomial_mutation(vector<double>& x, double r, int nm) {
 
         mutated_x[i] = deltaq * (upper_bound - lower_bound);
     }
-    
+
     return mutated_x;
 }
 
-int main() {
-    vector<double> father = {1.126, -0.588};  
-    double r = 0.4;
-    int nm = 20;  
+// int main() {
+//     vector<double> father = {1.126, -0.588};  
+//     double r = 0.4;
+//     int nm = 20;  
 
-    vector<double> mutated_offspring = polynomial_mutation(father, r, nm);
+//     vector<double> mutated_offspring = polynomial_mutation(father, r, nm);
     
-    cout << "Mutated offspring: ";
-    for (const auto& val : mutated_offspring) {
-        cout << val << " ";
-    }
-    cout << std::endl;
+//     cout << "Mutated offspring: ";
+//     for (const auto& val : mutated_offspring) {
+//         cout << val << " ";
+//     }
+//     cout << std::endl;
 
-    return 0;
-}
+//     return 0;
+// }
