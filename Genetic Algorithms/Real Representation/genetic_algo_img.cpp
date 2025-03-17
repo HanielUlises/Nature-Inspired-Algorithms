@@ -1,23 +1,23 @@
-
+#include "genetic_algo_img.h"
 #include <opencv2/opencv.hpp>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 
-#include "genetic_algo_img.h"
-
 GeneticAlgorithmReal::GeneticAlgorithmReal(int pop_size, int num_genes, int num_generations,
                                            double crossover_prob, double mutation_prob,
                                            std::vector<double> lower_bound,
                                            std::vector<double> upper_bound,
-                                           const cv::Mat& gray_img)
+                                           const cv::Mat& gray_img,
+                                           FitnessMetric metric)
     : population_size(pop_size), num_genes(num_genes), num_generations(num_generations),
       crossover_prob(crossover_prob), mutation_prob(mutation_prob),
       lower_bound(lower_bound), upper_bound(upper_bound),
       gray_img(gray_img.clone()),
       population(pop_size, std::vector<double>(num_genes)),
       fitness_values(pop_size),
-      gen(std::random_device{}()), dis(0.0, 1.0) {
+      gen(std::random_device{}()), dis(0.0, 1.0),
+      metric(metric) {
     initialize_population();
     output_file.open("results.txt");
     if (!output_file) {
@@ -47,8 +47,13 @@ void GeneticAlgorithmReal::evaluate_fitness() {
         cv::Mat transformed = sigmoid_transform(gray_img, alpha, delta);
         cv::normalize(transformed, transformed, 0, 1, cv::NORM_MINMAX);
         transformed.convertTo(transformed, CV_8U, 255.0);
-        double entropy_value = entropy(transformed);
-        fitness_values[i] = -entropy_value;
+        if (metric == FitnessMetric::ENTROPY) {
+            double entropy_value = entropy(transformed);
+            fitness_values[i] = -entropy_value; // Minimize negative entropy (maximize entropy)
+        } else { // STDDEV
+            double stddev_value = standard_deviation(transformed);
+            fitness_values[i] = -stddev_value; // Minimize negative stddev (maximize stddev)
+        }
     }
 }
 

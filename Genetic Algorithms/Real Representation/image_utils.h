@@ -20,7 +20,7 @@ inline double entropy(const cv::Mat& img) {
     float range[] = {0, 256};
     const float* histRange = {range};
     cv::calcHist(&img, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange);
-    hist /= img.total(); 
+    hist /= img.total();
     double entropy = 0;
     for (int i = 0; i < histSize; i++) {
         float p = hist.at<float>(i);
@@ -29,6 +29,12 @@ inline double entropy(const cv::Mat& img) {
         }
     }
     return entropy;
+}
+
+inline double standard_deviation(const cv::Mat& img) {
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(img, mean, stddev);
+    return stddev[0];
 }
 
 #endif // UTILS_H

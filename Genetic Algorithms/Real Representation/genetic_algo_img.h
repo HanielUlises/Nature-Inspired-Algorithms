@@ -6,12 +6,14 @@
 #include <utility>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-
 #include "image_utils.h"
 #include "PM/polynomial_mut.h"
 #include "SBX/sbx.h"
 
 class GeneticAlgorithmReal {
+public:
+    enum class FitnessMetric { ENTROPY, STDDEV };
+
 private:
     int population_size;
     int num_generations;
@@ -26,6 +28,7 @@ private:
     std::ofstream output_file;
     std::mt19937 gen;
     std::uniform_real_distribution<> dis;
+    FitnessMetric metric;
 
     void initialize_population();
     void evaluate_fitness();
@@ -40,7 +43,8 @@ public:
                          double crossover_prob, double mutation_prob,
                          std::vector<double> lower_bound,
                          std::vector<double> upper_bound,
-                         const cv::Mat& gray_img);
+                         const cv::Mat& gray_img,
+                         FitnessMetric metric);
     ~GeneticAlgorithmReal();
     void operator()();
     std::pair<std::vector<double>, double> getBestSolution();
