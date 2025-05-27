@@ -36,6 +36,7 @@ void GeneticAlgorithmReal::initialize_population() {
     for (auto& individual : population) {
         for (int i = 0; i < num_genes; ++i) {
             individual[i] = lower_bound[i] + dis(gen) * (upper_bound[i] - lower_bound[i]);
+            individual[i] = std::max(lower_bound[i], std::min(upper_bound[i], individual[i]));
         }
     }
 }
@@ -50,9 +51,13 @@ void GeneticAlgorithmReal::evaluate_fitness() {
         if (metric == FitnessMetric::ENTROPY) {
             double entropy_value = entropy(transformed);
             fitness_values[i] = -entropy_value; // Minimize negative entropy (maximize entropy)
+            std::cout << "Individual " << i << ": alpha=" << alpha << ", delta=" << delta 
+                      << ", Entropy=" << entropy_value << ", Fitness=" << fitness_values[i] << "\n";
         } else { // STDDEV
             double stddev_value = standard_deviation(transformed);
             fitness_values[i] = -stddev_value; // Minimize negative stddev (maximize stddev)
+            std::cout << "Individual " << i << ": alpha=" << alpha << ", delta=" << delta 
+                      << ", StdDev=" << stddev_value << ", Fitness=" << fitness_values[i] << "\n";
         }
     }
 }
@@ -72,6 +77,10 @@ void GeneticAlgorithmReal::crossover() {
         if (dis(gen) <= crossover_prob) {
             auto [offspring1, offspring2] = sbx(population[parent1_idx], population[parent2_idx],
                                                 crossover_prob, lower_bound, upper_bound);
+            for (int j = 0; j < num_genes; ++j) {
+                offspring1[j] = std::max(lower_bound[j], std::min(upper_bound[j], offspring1[j]));
+                offspring2[j] = std::max(lower_bound[j], std::min(upper_bound[j], offspring2[j]));
+            }
             new_population[parent1_idx] = offspring1;
             new_population[parent2_idx] = offspring2;
         }
@@ -83,6 +92,9 @@ void GeneticAlgorithmReal::mutate() {
     for (int i = 0; i < population_size; ++i) {
         if (dis(gen) <= mutation_prob) {
             population[i] = polynomial_mutation(population[i], mutation_prob, 20);
+            for (int j = 0; j < num_genes; ++j) {
+                population[i][j] = std::max(lower_bound[j], std::min(upper_bound[j], population[i][j]));
+            }
         }
     }
 }
