@@ -1,0 +1,100 @@
+ALGORITMO GENÉTICO PARA TSP CON VENTANAS DE TIEMPO
+Parámetros: Población=100, Generaciones=100, Mutación=0.1, Inyección=0.05
+
+============================================================
+  EXPERIMENTO 1: CON VENTANAS DE TIEMPO
+============================================================
+
+--- Ejecución 1 ---
+Tiempo de ejecución: 1 ms
+No se encontró ruta válida (inf)
+
+--- Ejecución 2 ---
+Tiempo de ejecución: 1 ms
+No se encontró ruta válida (inf)
+
+--- Ejecución 3 ---
+Tiempo de ejecución: 1 ms
+No se encontró ruta válida (inf)
+
+--- Ejecución 4 ---
+Tiempo de ejecución: 1 ms
+No se encontró ruta válida (inf)
+
+--- Ejecución 5 ---
+Tiempo de ejecución: 1 ms
+No se encontró ruta válida (inf)
+
+----------------------------------------
+RESUMEN ESTADÍSTICO
+----------------------------------------
+Ejecuciones válidas: 0/5
+No se encontraron rutas válidas en ninguna ejecución.
+
+Resultados de todas las ejecuciones:
+Ejecución 1: inf (sin solución válida)
+Ejecución 2: inf (sin solución válida)
+Ejecución 3: inf (sin solución válida)
+Ejecución 4: inf (sin solución válida)
+Ejecución 5: inf (sin solución válida)
+
+============================================================
+  EXPERIMENTO 2: SIN VENTANAS DE TIEMPO
+============================================================
+
+--- Ejecución 1 ---
+Tiempo de ejecución: 1 ms
+Mejor tiempo encontrado: 186.52
+
+--- Ejecución 2 ---
+Tiempo de ejecución: 1 ms
+Mejor tiempo encontrado: 213.06
+
+--- Ejecución 3 ---
+Tiempo de ejecución: 1 ms
+Mejor tiempo encontrado: 204.54
+
+--- Ejecución 4 ---
+Tiempo de ejecución: 1 ms
+Mejor tiempo encontrado: 174.82
+
+--- Ejecución 5 ---
+Tiempo de ejecución: 1 ms
+Mejor tiempo encontrado: 219.68
+
+----------------------------------------
+RESUMEN ESTADÍSTICO
+----------------------------------------
+Ejecuciones válidas: 5/5
+Mejor tiempo: 174.82
+Peor tiempo: 219.68
+Tiempo promedio: 199.72
+
+--- MEJOR RUTA ENCONTRADA ---
+Ruta: New York -> Philadelphia -> San Diego -> San Francisco -> Las Vegas -> Phoenix -> Los Angeles -> Dallas -> Houston -> Austin -> Chicago -> New York
+Tiempo total: 174.82
+
+Detalles de la ruta:
+Ciudad de inicio: New York (tiempo: 0.00)
+New York -> Philadelphia (viaje: 1.88, llegada: 1.88, ventana: [-inf, inf])
+Philadelphia -> San Diego (viaje: 57.96, llegada: 59.84, ventana: [-inf, inf])
+San Diego -> San Francisco (viaje: 10.62, llegada: 70.46, ventana: [-inf, inf])
+San Francisco -> Las Vegas (viaje: 12.14, llegada: 82.60, ventana: [-inf, inf])
+Las Vegas -> Phoenix (viaje: 5.92, llegada: 88.52, ventana: [-inf, inf])
+Phoenix -> Los Angeles (viaje: 7.50, llegada: 96.02, ventana: [-inf, inf])
+Los Angeles -> Dallas (viaje: 28.84, llegada: 124.86, ventana: [-inf, inf])
+Dallas -> Houston (viaje: 4.80, llegada: 129.66, ventana: [-inf, inf])
+Houston -> Austin (viaje: 3.26, llegada: 132.92, ventana: [-inf, inf])
+Austin -> Chicago (viaje: 23.36, llegada: 156.28, ventana: [-inf, inf])
+Chicago -> New York (regreso: 18.54, tiempo final: 174.82)
+
+Resultados de todas las ejecuciones:
+Ejecución 1: 186.52
+Ejecución 2: 213.06
+Ejecución 3: 204.54
+Ejecución 4: 174.82
+Ejecución 5: 219.68
+
+============================================================
+  EXPERIMENTOS COMPLETADOS
+============================================================
