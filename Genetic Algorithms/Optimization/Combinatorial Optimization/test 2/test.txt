@@ -1,0 +1,69 @@
+GA TSP Solver with/without time windows
+
+============================================================
+  EXPERIMENT: WITH TIME WINDOWS
+============================================================
+
+-- Run 1 --
+Exec time: 1 ms
+Found: 3142.82
+
+-- Run 2 --
+Exec time: 1 ms
+Found: 3178.00
+
+-- Run 3 --
+Exec time: 1 ms
+Found: 4121.70
+
+-- Run 4 --
+Exec time: 1 ms
+Found: 4020.96
+
+-- Run 5 --
+Exec time: 1 ms
+Found: 3166.06
+
+----------------------------------------
+SUMMARY
+----------------------------------------
+Valid runs: 5/5
+Best: 3142.82  Worst: 4121.70  Avg: 3525.91
+
+-- Best overall route --
+Route: New York -> Philadelphia -> Dallas -> Phoenix -> Los Angeles -> Las Vegas -> San Francisco -> Austin -> Chicago -> San Diego -> Houston -> New York
+Total time/cost: 3142.82
+
+============================================================
+  EXPERIMENT: WITHOUT TIME WINDOWS
+============================================================
+
+-- Run 1 --
+Exec time: 1 ms
+Found: 215.18
+
+-- Run 2 --
+Exec time: 1 ms
+Found: 211.64
+
+-- Run 3 --
+Exec time: 1 ms
+Found: 181.94
+
+-- Run 4 --
+Exec time: 1 ms
+Found: 207.98
+
+-- Run 5 --
+Exec time: 1 ms
+Found: 178.96
+
+----------------------------------------
+SUMMARY
+----------------------------------------
+Valid runs: 5/5
+Best: 178.96  Worst: 215.18  Avg: 199.14
+
+-- Best overall route --
+Route: New York -> Chicago -> Dallas -> Austin -> Houston -> Los Angeles -> Las Vegas -> Phoenix -> San Francisco -> San Diego -> Philadelphia -> New York
+Total time/cost: 178.96
