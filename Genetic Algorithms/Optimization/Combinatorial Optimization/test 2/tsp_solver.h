@@ -1,8 +1,8 @@
 #ifndef TSP_SOLVER_H
 #define TSP_SOLVER_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 struct City {
     std::string name;
@@ -26,27 +26,30 @@ public:
     std::vector<int> get_best_tour() const;
 
 private:
-    std::vector<std::vector<double>> distances_;
-    std::vector<City> cities_;
+    void initialize_population();
+    void remove_abrupts(std::vector<int>& tour, int m = 3);
+    void evaluate_population();
+    double calculate_fitness(const std::vector<int>& tour, int start_city);
+    std::vector<int> cycle_crossover(const std::vector<int>& parent1, const std::vector<int>& parent2, int start_city);
+    void next_generation();
+    std::vector<int> _get_sorted_nearest_neighbors(int city, const std::vector<std::vector<double>>& dist_matrix, int m);
+    std::vector<std::vector<int>> _generate_candidate_insertions(int city, const std::vector<int>& base_tour, const std::vector<int>& neighbors);
+    std::vector<int> tournament_selection(int tournament_size);
+
+    const std::vector<std::vector<double>>& distances_;
+    const std::vector<City>& cities_;
     int population_size_;
     int generations_;
     double crossover_rate_;
     double mutation_rate_;
     double random_insert_prob_;
     double penalty_factor_;
-
     std::vector<std::vector<int>> population_;
+    std::vector<int> start_cities_;
     std::vector<double> fitness_;
-    std::vector<int> best_tour_;
     double best_distance_;
-
-    void initialize_population();
-    void evaluate_population();
-    void remove_abrupts(std::vector<int>& tour);
-    double calculate_fitness(const std::vector<int>& tour);
-    double calculate_distance(const std::vector<int>& tour);
-    std::vector<int> cycle_crossover(const std::vector<int>& parent1, const std::vector<int>& parent2);
-    void next_generation();
+    std::vector<int> best_tour_;
+    std::vector<std::vector<int>> nearest_neighbors_cache_;
 };
 
 #endif

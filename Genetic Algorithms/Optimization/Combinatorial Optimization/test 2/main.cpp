@@ -67,13 +67,12 @@ int main() {
         }
     }
 
-    // Parámetros GA: población, generaciones, p_cruce, p_mutación, p_inserción, factor_penalización
     TspSolver solver(distances, cities,
-                     /*pop_size=*/50,
+                     /*pop_size=*/30,
                      /*generations=*/100,
-                     /*cross_rate=*/0.7,
-                     /*mut_rate=*/0.3,
-                     /*rand_insert_rate=*/0.1,
+                     /*cross_rate=*/0.9,
+                     /*mut_rate=*/0.15,
+                     /*rand_insert_rate=*/0.05,
                      /*penalty=*/10.0);
 
     solver.solve();
@@ -108,7 +107,6 @@ int main() {
         std::cout << "\n";
     }
 
-    // Regreso 
     if (!best_tour.empty()) {
         int last = best_tour.back();
         int origin = best_tour.front();
