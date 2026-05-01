@@ -2,6 +2,29 @@
 
 This repository contains implementations of various nature-inspired algorithms, organized by technique. These algorithms are inspired by natural processes, such as evolution, swarming, and adaptive behaviors, and are widely used for approaching a solution to complex optimization and search problems.
 
+```
+(COMING SOON REESTRUCTURING WITH A GREAT LEAP JUST WAIT)
+Nature-Inspired-Algorithms/
+│
+├── Evolutionary/
+│   ├── Genetic Algorithms/
+│   ├── Genetic Programming/
+│   └── Evolution Strategies/
+│
+├── Swarm Intelligence/
+│   ├── PSO/
+│   ├── Ant Colony/
+│   └── Bee Algorithms/
+│
+├── Local Search/
+│   ├── Hill Climbing/
+│   ├── Simulated Annealing/
+│   └── Tabu Search/
+│
+├── Utils/
+└── README.md
+
+```
 ## Techniques (so far)
 
 ### Evolutionary Algorithms
